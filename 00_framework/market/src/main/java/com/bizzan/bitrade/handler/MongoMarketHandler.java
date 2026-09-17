@@ -9,6 +9,12 @@ import com.bizzan.bitrade.entity.CoinThumb;
 import com.bizzan.bitrade.entity.ExchangeTrade;
 import com.bizzan.bitrade.entity.KLine;
 
+/*
+ * 【面试要点】MarketHandler 实现之一（观察者模式）：把成交明细和K线持久化到 MongoDB。
+ * 按 symbol 分集合（exchange_trade_BTC_USDT）、K线再按周期分集合
+ * （exchange_kline_BTC_USDT_1min）—— 按业务维度分表，避免单集合过大。
+ * 选 MongoDB 的原因：行情数据写多读多、结构灵活、无强事务需求。
+ */
 @Component
 public class MongoMarketHandler implements MarketHandler {
     @Autowired

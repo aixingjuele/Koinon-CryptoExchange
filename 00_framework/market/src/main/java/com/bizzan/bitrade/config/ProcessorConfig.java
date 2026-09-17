@@ -23,6 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * 【面试要点】Spring 配置类：应用启动时为所有"启用状态"的交易对创建
+ * DefaultCoinProcessor，并注册三个 MarketHandler（MongoMarketHandler 存 MongoDB、
+ * WebsocketMarketHandler 推 WebSocket、NettyHandler 推 Netty 长连接），
+ * 最后统一放入 CoinProcessorFactory。新增推送通道时只需再加一个 Handler 并注册，
+ * 符合开闭原则。注意：此处默认 setIsStopKLine(true)（暂停K线生成），
+ * 需外部（如管理端接口）再开启。
+ */
 @Configuration
 @Slf4j
 public class ProcessorConfig {

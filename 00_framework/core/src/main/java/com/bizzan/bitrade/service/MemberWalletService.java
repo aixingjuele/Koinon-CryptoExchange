@@ -41,6 +41,16 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 【面试重点】钱包服务层。
+ *
+ * 资金变动全部走 MemberWalletDao 的原子 SQL（条件更新），本类自己不加 synchronized，
+ * 因为并发安全由数据库行锁保证 —— 这就是"无锁设计"在资金层的体现：
+ * 把并发控制下推到存储层，Java 业务层保持无状态、可水平扩展。
+ *
+ * 注意：本类方法多配合调用方的 @Transactional 使用（如下单、成交处理），
+ * 保证"扣款 + 记流水 + 返佣"等多步操作要么全部成功、要么整体回滚。
+ */
 @Service
 @Slf4j
 public class MemberWalletService extends BaseService {
@@ -264,6 +274,13 @@ public class MemberWalletService extends BaseService {
     /**
      * 冻结钱包
      *
+     * 调用 DAO 的原子冻结 SQL，ret > 0 表示冻结成功（WHERE balance >= amount 条件满足）。
+     *
+     * 设计点：为什么返回 MessageResult 而不是抛异常？
+     * "余额不足"是下单流程中的正常业务结果而非系统异常，返回 MessageResult
+     * 能让调用方（下单流程 ExchangeOrderService.addOrder）友好地提示用户"余额不足"，
+     * 也避免无谓地触发事务回滚和异常堆栈开销。
+     *
      * @param memberWallet
      * @param amount
      * @return
@@ -279,6 +296,13 @@ public class MemberWalletService extends BaseService {
 
     /**
      * 解冻钱包
+     *
+     * 撤单/订单完成时退回未成交的冻结资金，同样靠 DAO 的条件更新保证原子性。
+     *
+     * 注意：失败分支里 log 打印"订单取消异常"——解冻返回 0 行意味着冻结余额不足，
+     * 属于资金数据不一致的异常状态（理论上不该发生），此处仅记日志返回错误，
+     * 实际需要人工介入对账，这是资金操作失败的兜底手段。
+     * 更严谨的做法是失败时告警 + 落对账表，由定时任务或人工修复。
      *
      * @param memberWallet
      * @param amount

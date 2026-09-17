@@ -16,6 +16,18 @@ import java.util.HashMap;
  * 生成各时间段的K线信息
  *
  */
+/*
+ * 【面试要点】各周期K线的定时调度器：通过 Spring @Scheduled cron 表达式触发，
+ * 遍历 CoinProcessorFactory 中所有交易对的 CoinProcessor 完成：
+ *  - 每分钟整点：autoGenerate() 切 1min K线、更新24h成交量，并按 5/10/15/30 分钟整除
+ *    关系顺带生成对应分钟级K线；每日 0 点重置 CoinThumb（resetThumb）。
+ *  - 每小时整点：生成 1h K线。
+ *  - 每日 0 点：生成日K线；逢周日(week==1)生成周K线、逢每月1号生成月K线。
+ * 实际生成逻辑委托给 CoinProcessor.generateKLine()（查成交明细/日线离线聚合）。
+ * 注意：方法名叫 handle5minKLine 但实际是"每分钟"触发，命名有误导。
+ * 缺点：单实例定时器，多节点部署会重复生成（需分布式锁或 xxl-job 之类调度中心）；
+ * 且所有交易对串行 forEach 处理，交易对很多时一分钟内可能跑不完。
+ */
 @Component
 @Slf4j
 public class KLineGeneratorJob {
@@ -27,6 +39,7 @@ public class KLineGeneratorJob {
     /**
      * 每分钟定时器，处理分钟K线
      */
+    // cron "0 * * * * *"：每分钟第 0 秒触发；利用 minute%5/10/15/30==0 的整除关系复用同一次调度
     @Scheduled(cron = "0 * * * * *")
     public void handle5minKLine(){
         Calendar calendar = Calendar.getInstance();
@@ -66,6 +79,7 @@ public class KLineGeneratorJob {
     /**
      * 每小时运行
      */
+    // cron "0 0 * * * *"：每小时整点触发，生成 1 小时K线
     @Scheduled(cron = "0 0 * * * *")
     public void handleHourKLine(){
         processorFactory.getProcessorMap().forEach((symbol,processor)-> {
@@ -86,6 +100,7 @@ public class KLineGeneratorJob {
     /**
      * 每日0点处理器，处理日K线
      */
+    // cron "0 0 0 * * *"：每日 0 点触发，生成日K线；逢周日再生成周K线、逢每月1号再生成月K线
     @Scheduled(cron = "0 0 0 * * *")
     public void handleDayKLine(){
         processorFactory.getProcessorMap().forEach((symbol,processor)->{

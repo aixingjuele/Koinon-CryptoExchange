@@ -22,6 +22,20 @@ import java.util.Set;
 /**
  * 处理Netty订阅与取消订阅
  */
+/*
+ * 【面试要点】基于 Netty 的长连接行情推送（面向 APP 端），与 WebSocket
+ * （SimpMessagingTemplate，面向 H5/PC 端）双通道并存 —— APP 用私有 TCP 长连接
+ * 更省电、弱网表现更好，H5 只能用标准 WebSocket。
+ * 订阅模型：发布订阅/群组推送。channel 按 topic 分组（NettyCacheUtils.storeChannel），
+ * 推送时按 topic 找到 channel 集合群发（hawkPushService.pushMsg）。
+ * topic 设计：symbol（公共行情：成交/K线/盘口）与 symbol+"-"+uid（个人订单状态，
+ * 只有本人连接能收到自己的成交通知）两级。
+ * @HawkBean/@HawkMethod 是第三方 hawk 框架注解，作用类似 Netty 版的
+ * @Controller/@RequestMapping，按 cmd 命令字路由到对应方法。
+ * 缺点：NettyCacheUtils 的 channel 缓存是单机内存的，多实例部署时用户连接分散在
+ * 不同节点，按 topic 推送只能触达本机连接，其余节点上的用户会丢消息 ——
+ * 集群方案需引入 Redis pub/sub 或 MQ 做跨节点广播（面试常考"WebSocket/长连接集群如何推送"）。
+ */
 @HawkBean
 @Slf4j
 public class NettyHandler implements MarketHandler {
@@ -29,6 +43,7 @@ public class NettyHandler implements MarketHandler {
     private HawkPushServiceApi hawkPushService;
     private String topicOfSymbol = "SYMBOL_THUMB";
 
+    // 订阅：维护三张映射 —— channel->userKey、topic->channel集合（群发用）、userKey->topic集合（退订清理用）
     public void subscribeTopic(Channel channel, String topic){
         String userKey = channel.id().asLongText();
         if(!NettyCacheUtils.keyChannelCache.containsKey(channel)) {
@@ -69,6 +84,8 @@ public class NettyHandler implements MarketHandler {
         return response.build();
     }
 
+    // 订阅交易对行情：symbol topic 收公共行情；若带 uid 再订阅 symbol+"-"+uid，
+    // 用于接收个人订单状态推送（handleOrder 按此 topic 定向推送，他人收不到）
     @HawkMethod(cmd = NettyCommand.SUBSCRIBE_EXCHANGE)
     public QuoteMessage.SimpleResponse subscribeExchange(byte[] body, ChannelHandlerContext ctx){
         QuoteMessage.SimpleResponse.Builder response = QuoteMessage.SimpleResponse.newBuilder();
@@ -98,6 +115,7 @@ public class NettyHandler implements MarketHandler {
         return response.build();
     }
 
+    // MarketHandler 回调：成交产生时，向 SYMBOL_THUMB 组推行情摘要、向 symbol 组推成交明细
     @Override
     public void handleTrade(String symbol, ExchangeTrade exchangeTrade, CoinThumb thumb) {
         byte[] body = JSON.toJSONString(thumb).getBytes();
@@ -106,11 +124,13 @@ public class NettyHandler implements MarketHandler {
         hawkPushService.pushMsg(NettyCacheUtils.getChannel(symbol),NettyCommand.PUSH_EXCHANGE_TRADE,JSONObject.toJSONString(exchangeTrade).getBytes());
     }
 
+    // MarketHandler 回调：新K线生成时向 symbol 组推送
     @Override
     public void handleKLine(String symbol, KLine kLine) {
         hawkPushService.pushMsg(NettyCacheUtils.getChannel(symbol),NettyCommand.PUSH_EXCHANGE_KLINE, JSONObject.toJSONString(kLine).getBytes());
     }
 
+    // 盘口推送（由 ExchangePushJob 批量调用）：24档盘口 + 50档深度各推一次
     public void handlePlate(String symbol,TradePlate plate){
         //log.info("推送盘口>>>>>:"+JSON.toJSONString(plate));
         //推送盘口
@@ -119,6 +139,7 @@ public class NettyHandler implements MarketHandler {
         hawkPushService.pushMsg(NettyCacheUtils.getChannel(symbol),NettyCommand.PUSH_EXCHANGE_DEPTH, plate.toJSON(50).toJSONString().getBytes());
     }
 
+    // 个人订单状态推送：topic = symbol + "-" + memberId，只有本人订阅了该 topic，实现定向推送
     public void handleOrder(short command, ExchangeOrder order){
         try {
             String topic = order.getSymbol() + "-" + order.getMemberId();

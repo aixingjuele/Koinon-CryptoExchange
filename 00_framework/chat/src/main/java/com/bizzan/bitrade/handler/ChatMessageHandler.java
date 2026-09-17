@@ -16,6 +16,12 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+/*
+ * 【面试要点】MessageHandler 实现：聊天消息持久化到 MongoDB（chat_message 集合），
+ * 并提供按订单分页查询历史消息的能力（按时间倒序 + skip/limit 分页）。
+ * 聊天系统选 MongoDB：写入量大、结构灵活、按 orderId 查询简单。
+ * 注意：skip 分页在数据量大时是深分页，性能差，生产可改为"按时间戳游标"翻页。
+ */
 @Component
 public class ChatMessageHandler implements MessageHandler {
 

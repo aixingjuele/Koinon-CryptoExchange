@@ -18,7 +18,10 @@ import java.util.List;
 public class CoinTraderConfig {
 
     /**
-     * 配置交易处理类
+     * 配置交易处理类：启动时为【所有启用的交易对】各创建一个 CoinTrader 撮合器
+     * 【部署相关】findAllEnabled() 查的是 exchange_coin 表中 enable=1 的交易对，
+     *   因此"按交易对拆分部署"的落地方式可以是：不同节点连不同的配置/库，
+     *   或扩展此处按节点标识过滤交易对（本系统未实现节点隔离，默认单节点全量加载）
      * @param exchangeCoinService
      * @param kafkaTemplate
      * @return

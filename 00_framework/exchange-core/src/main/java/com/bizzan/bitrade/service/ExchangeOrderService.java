@@ -45,6 +45,26 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 委托订单核心服务（exchange-core 模块，被 exchange-api 和 market 两个模块共用）
+ *
+ * 【面试重点·无锁无事务下如何保证资金安全？——本类就是答案的另一半】
+ * 撮合引擎(内存)是无锁无事务的，资金安全靠"三段式"保证：
+ *   ① 下单时(addOrder)：DB 事务 + 乐观锁SQL 冻结资金 → 先锁住钱，撮合器只管算
+ *   ② 成交时(processExchangeTrade)：DB 事务 + select for update 行锁 + 原子SQL 清算
+ *   ③ 完成/取消时(tradeCompleted/cancelOrder)：DB 事务 + 状态机校验 + 解冻剩余资金
+ *
+ * 【状态机幂等·防 Kafka 重复消费的关键】
+ *   订单状态机：TRADING → COMPLETED / CANCELED（终态不可逆）
+ *   tradeCompleted/cancelOrder 都先校验 status==TRADING，否则拒绝处理。
+ *   Kafka at-least-once 重复投递时，第二次消费因状态已变更而安全跳过 → 幂等。
+ *   （这是消息系统通用幂等模式之一：状态机幂等；另一种是唯一键去重表）
+ *
+ * 【注意·本类最大的幂等缺口】processExchangeTrade() 没有防重！
+ *   若 exchange-trade 消息重复消费，会重复加币/扣币（资金凭空增加）。
+ *   依赖：① Kafka 重复投递概率低 ② market 模块消费时批量处理+行锁。
+ *   严谨做法：以"成交记录唯一键(买卖orderId+price+time)"建去重表或 Redis SETNX 防重。
+ */
 @Slf4j
 @Service
 public class ExchangeOrderService extends BaseService {
@@ -82,8 +102,17 @@ public class ExchangeOrderService extends BaseService {
 
 
     /**
-     * 添加委托订单
-     *
+     * 添加委托订单（下单的资金冻结 + 落库，@Transactional 保证原子性）
+     * 【资金安全第一道防线·面试重点】
+     *   买单：冻结 baseCoin（限价单冻结 价格×数量 的 USDT；市价单冻结全部成交额）
+     *   卖单：冻结 coin（冻结对应数量的 BTC）
+     *   冻结用乐观锁 SQL：update ... set balance=balance-x, frozen=frozen+x where id=? and balance>=x
+     *   → "检查余额"和"扣减"在同一条原子 SQL 里完成，并发下绝不会超扣（防超卖）
+     *   → 余额不足时 update 影响 0 行，freezeBalance 返回 error，事务回滚，拒单
+     * 【为什么先冻结？】撮合引擎在内存中撮合时不再访问 DB 查余额，
+     *   因为钱已经在下单时锁死了 —— 这是"内存撮合零 DB"的前提，用冻结换性能
+     * 【事务边界】本方法事务提交后，调用方(OrderController)才发 Kafka；
+     *   若先发 Kafka 再提交事务，撮合器可能读到"未提交的订单"（资金还没冻结）→ 顺序不能反
      * @param memberId
      * @param order
      * @return
@@ -273,6 +302,31 @@ public class ExchangeOrderService extends BaseService {
      * @return
      * @throws Exception
      */
+    /**
+     * 【清算核心·面试重点】成交清算：把撮合结果落实到买卖双方钱包（market 模块消费 exchange-trade 时调用）
+     *
+     * 【防死锁设计·经典面试题"两个账户转账如何加锁"】
+     *   一笔成交涉及买方、卖方两个用户的钱包（各2个币种共4个钱包行），
+     *   并发清算时若线程1锁A等B、线程2锁B等A → 死锁。
+     *   本代码的解法：【固定加锁顺序】—— 永远先锁买方 memberId 的钱包行，再锁卖方的
+     *   （select ... for update 按 member_id 锁定该用户所有钱包行）。
+     *   更通用的解法是按 memberId 大小排序加锁（本代码固定先买后卖，效果相同：
+     *   所有线程加锁顺序一致 → 不会产生循环等待 → 不会死锁）
+     *
+     * 【事务内完成的操作】（任一失败整体回滚，保证资金不少不多）
+     *   买方：+交易币(扣手续费)  -冻结的基币(USDT)
+     *   卖方：+基币(扣手续费)    -冻结的交易币(BTC)
+     *   + 成交明细落库 + 资金流水 + 推广返佣
+     *
+     * 【幂等缺口·注意】本方法无防重机制！exchange-trade 消息若重复消费会重复清算。
+     *   面试时如被问"如何保证清算幂等"，标准答案：成交记录建唯一索引(或去重表)，
+     *   插入冲突则跳过；或 Redis SETNX(tradeId)。本系统依赖 Kafka 低重复率+人工对账。
+     *
+     * @param trade 撮合引擎产生的成交记录
+     * @param secondReferrerAward 二级推荐人是否返回佣金 true 返回佣金
+     * @return
+     * @throws Exception
+     */
     @Transactional
     public MessageResult processExchangeTrade(ExchangeTrade trade, boolean secondReferrerAward) throws Exception {
         log.info("processExchangeTrade,trade = {}", trade);
@@ -291,7 +345,7 @@ public class ExchangeOrderService extends BaseService {
             log.error("invalid trade symbol {}", buyOrder.getSymbol());
             return MessageResult.error(500, "invalid trade symbol {}" + buyOrder.getSymbol());
         }
-        // 根据memberId锁表，防止死锁 
+        // 根据memberId锁表，防止死锁（固定顺序：先买方后卖方，所有线程加锁顺序一致 → 无循环等待 → 无死锁）
         DB.query("select id from member_wallet where member_id = ? for update;",buyOrder.getMemberId());
         if(!buyOrder.getMemberId().equals(sellOrder.getMemberId())) {
             DB.query("select id from member_wallet where member_id = ? for update;", sellOrder.getMemberId());
@@ -304,8 +358,14 @@ public class ExchangeOrderService extends BaseService {
     }
 
     /**
-     * 对发生交易的委托处理相应的钱包
-     *
+     * 对发生交易的委托处理相应的钱包（单边清算：买方和卖方各调一次）
+     * 【资金变动公式·面试可手推】
+     *   买方：收入 = 成交量 - 手续费(收交易币BTC)；支出 = 成交额(从冻结的USDT里扣)
+     *   卖方：收入 = 成交额 - 手续费(收基币USDT)；支出 = 成交量(从冻结的BTC里扣)
+     *   手续费差异化收取：买方收"得到的币"，卖方收"得到的钱" —— 交易所通行做法
+     * 【注意】increaseBalance/decreaseFrozen 都是原子SQL（见 MemberWalletDao 注释），
+     *   配合外层 for update 行锁 + @Transactional，并发清算安全
+     * 【注意】机器人/管理员(memberId=1/10001)免手续费 —— 造市机器人成本为零
      * @param order               委托订单
      * @param trade               交易详情
      * @param coin                交易币种信息，包括手续费 交易币种信息等等
@@ -563,14 +623,19 @@ public class ExchangeOrderService extends BaseService {
     }
 
     /**
-     * 订单交易完成
-     *
+     * 订单交易完成（market 模块消费 exchange-order-completed 时调用）
+     * 【状态机幂等·面试重点】第一行就校验 status==TRADING：
+     *   Kafka 重复投递/撤单与完成竞争时，只有第一个到达的请求能成功处理，
+     *   后续请求因状态已是终态(COMPLETED/CANCELED)直接拒绝 → 天然幂等，不会重复退款
+     * 【退冻结】限价买单可能"冻结了 价格×数量 但实际以更低价成交"，
+     *   差额通过 orderRefund 解冻退回用户可用余额
      * @param orderId
      * @return
      */
     @Transactional
     public MessageResult tradeCompleted(String orderId, BigDecimal tradedAmount, BigDecimal turnover) {
         ExchangeOrder order = exchangeOrderRepository.findByOrderId(orderId);
+        //状态机校验：只有 TRADING 才能完结，重复消息/并发撤单在此被拦截（幂等核心）
         if (order.getStatus() != ExchangeOrderStatus.TRADING) {
             return MessageResult.error(500, "invalid order(" + orderId + "),not trading status");
         }
@@ -587,8 +652,14 @@ public class ExchangeOrderService extends BaseService {
     }
 
     /**
-     * 委托退款，如果取消订单或成交完成有剩余
-     *
+     * 委托退款，如果取消订单或成交完成有剩余（解冻"冻结了但没花掉"的钱）
+     * 【退款公式·面试可手推】退款 = 下单时冻结的 - 实际成交消耗的
+     *   限价买单：冻结=价格×数量，消耗=实际成交额turnover
+     *     → 若实际成交价低于委托价（吃到了更优价），差额退回 —— 用户不吃亏
+     *   市价买单：冻结=全部成交额，消耗=turnover → 剩余零头退回
+     *   卖单：冻结=数量，消耗=已成交量 → 未成交部分退回
+     * 【为什么需要退款】下单时按"最坏情况"冻结（限价买单按委托价冻），
+     *   撮合按"实际最优价"成交，差额必须退还 —— 先冻后退，资金分毫不错
      * @param order
      * @param tradedAmount
      * @param turnover
@@ -621,8 +692,10 @@ public class ExchangeOrderService extends BaseService {
     }
 
     /**
-     * 取消订单
-     *
+     * 取消订单（market 模块消费 exchange-order-cancel-success 时调用）
+     * 【状态机幂等】同 tradeCompleted：只有 TRADING 状态可取消，
+     *   "撤单成功消息"与"订单完成消息"竞争时，先到者变更状态，后到者被此校验拦截
+     *   → 保证"一笔订单要么算成交要么算取消，不会既成交又退款"（资金安全的最后兜底）
      * @param orderId 订单编号
      * @return
      */
@@ -632,6 +705,7 @@ public class ExchangeOrderService extends BaseService {
         if (order == null) {
             return MessageResult.error("order not exists");
         }
+        //状态机校验：TRADING 才能取消（幂等+竞争兜底）
         if (order.getStatus() != ExchangeOrderStatus.TRADING) {
             return MessageResult.error(500, "order not in trading");
         }

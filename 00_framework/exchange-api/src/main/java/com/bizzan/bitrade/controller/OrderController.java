@@ -30,7 +30,23 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 委托订单处理类
+ * 委托订单处理类（下单/撤单的 HTTP 入口，exchange-api 模块 = 交易网关）
+ *
+ * 【在整体架构中的位置·面试先讲这个】
+ *   用户下单 → 本类做【前置校验 + 资金冻结 + 落库】→ 发 Kafka(exchange-order)
+ *   → 撮合引擎(exchange模块)异步撮合 → 用户通过 WebSocket/Netty 收到成交通知
+ *
+ * 【为什么下单不直接同步撮合？（异步化设计）】
+ *   1. 削峰：下单洪峰被 Kafka 缓冲，撮合引擎按自己节奏消费，不会被突发流量打垮
+ *   2. 解耦：API 服务可水平扩展（无状态），撮合引擎独立部署（有状态、按交易对拆分）
+ *   3. 串行化：Kafka 分区天然把并发下单请求排队，撮合单线程处理（无锁的前提）
+ *   代价：用户下单后不能立即知道成交结果，只能拿到 orderId，靠推送/轮询获知成交
+ *   —— 这就是"异步撮合"架构，币安/火币等交易所都是这个模式
+ *
+ * 【资金安全的两道防线】
+ *   第一道（本类）：下单时 DB 事务内"冻结资金"（乐观锁SQL，余额不足冻结失败直接拒单）
+ *   第二道（market模块）：成交后清算（行锁 for update + 原子SQL 加币扣冻结）
+ *   撮合引擎本身【不碰钱】，只算"谁和谁成交了多少" —— 撮合与清算分离，是交易所标准架构
  */
 @Slf4j
 @RestController
@@ -61,7 +77,26 @@ public class OrderController {
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
-     * 添加委托订单
+     * 添加委托订单（下单接口）
+     * 【处理流程·面试能背下来】
+     *   1. 参数校验：方向/类型/价格>0/数量>0
+     *   2. 交易对校验：存在、启用、可交易、买卖方向开关、价格上下限(涨跌停)、市价单开关
+     *   3. 精度处理：价格/数量按交易对配置截断(ROUND_DOWN 向下取，保护平台不多给)
+     *   4. 数量限额：最小成交量/最大成交量/最小成交额
+     *   5. 钱包校验：钱包存在、未锁定
+     *   6. 活动模式校验：抢购(QIANGGOU)/分摊(FENTAN) 模式的时间窗与身份限制（IEO 打新玩法）
+     *   7. 委托数量限制：单用户同交易对同方向最大挂单数（防恶意刷单堵盘口）
+     *   8. addOrder(): 【DB事务】冻结资金(乐观锁) + 订单落库(status=TRADING)
+     *   9. 发 Kafka "exchange-order" → 异步撮合
+     *
+     * 【关键设计：先冻结资金再撮合】
+     *   买单冻结 baseCoin(如USDT)：限价单冻结 价格×数量；市价单冻结 全部成交额
+     *   卖单冻结 coin(如BTC)：冻结 数量
+     *   → 撮合时无需再检查余额，撮合引擎零 DB 访问，这是内存撮合能跑快的前提！
+     *
+     * 【注意·潜在问题】第8步事务提交与第9步发Kafka不是原子的：
+     *   若事务提交后、发Kafka前进程宕机 → 订单在DB是TRADING但撮合器永远收不到
+     *   → 资金被永久冻结（需人工或定时任务兜底）。业界解法：本地消息表/事务消息(RocketMQ)/Outbox模式
      * @param authMember
      * @param direction
      * @param symbol
@@ -292,7 +327,9 @@ public class OrderController {
             return MessageResult.error(500, msService.getMessage("ORDER_FAILED") + mr.getMessage());
         }
         log.info(">>>>>>>>>>订单提交完成>>>>>>>>>>");
-        // 发送消息至Exchange系统
+        // 发送消息至Exchange系统（异步撮合的入口）
+        // 【Kafka顺序性隐患·面试点】此处 send 未指定 key，同一交易对订单可能散落到多个分区导致乱序；
+        //   正确做法：kafkaTemplate.send("exchange-order", symbol, json)，symbol 作 key 保证同交易对进同分区
         kafkaTemplate.send("exchange-order", JSON.toJSONString(order));
         MessageResult result = MessageResult.success(msService.getMessage("EXAPI_SUCCESS"));
         result.setData(order.getOrderId());
@@ -301,7 +338,11 @@ public class OrderController {
 
 
     /**
-      * 行情机器人专用：添加委托订单
+      * 行情机器人专用：添加委托订单（内部接口，硬编码 sign 校验 + 固定 uid，跳过钱包冻结等部分校验）
+      * 【注意】这是给"刷量机器人"开的后门接口：uid 固定为 1/10001（机器人/管理员），
+      *   钱包校验被注释掉了 —— 机器人账户可以无资金下单，用于制造盘口深度和成交量（造市）。
+      *   面试时可客观提及：小型交易所普遍存在此类造市设计，但正规交易所用专业做市商API+子账户体系。
+      * 【安全风险】sign 是硬编码字符串，泄露后任何人可冒用机器人下单。
      * @param uid
      * @param direction
      * @param symbol
@@ -734,7 +775,17 @@ public class OrderController {
     }
 
     /**
-     * 取消委托
+     * 取消委托（撤单接口）
+     * 【撤单双路径·设计细节】
+     *   路径A（正常）：isExchangeOrderExist()=true（订单还在撮合器内存中）
+     *     → 发 Kafka "exchange-order-cancel" → 撮合器从订单簿移除 → 发 cancel-success
+     *     → market 模块消费 → DB 改 CANCELED + 解冻资金
+     *   路径B（兜底）：撮合器里找不到该订单（如撮合服务重启后订单簿还没恢复、或订单刚完成）
+     *     → forceCancelOrder() 直接在 DB 强制取消并退款
+     * 【为什么撤单要先问撮合器？】订单的"真实状态"在撮合器内存里（DB 状态滞后），
+     *   直接改 DB 可能把"正在撮合中"的订单撤掉导致资金错乱，所以必须先确认内存状态
+     * 【并发时序】撤单请求与撮合并发时，由撮合器内的 synchronized + DB 状态机双重兜底
+     *   （详见 CoinTrader.cancelOrder 注释）
      * @param member
      * @param orderId
      * @return
@@ -779,7 +830,12 @@ public class OrderController {
     }
 
     /**
-     * 查找撮合交易器中订单是否存在
+     * 查找撮合交易器中订单是否存在（通过 Eureka 服务名 + REST 调 exchange 模块的 MonitorController）
+     * 【架构观察】这是一次"跨进程查内存状态"的同步调用：
+     *   - 撮合器内存状态是唯一权威，DB 只是异步镜像
+     *   - 缺点：撤单链路多了一次同步 HTTP，且 exchange 服务不可用时 catch 返回 false
+     *     → 会走 forceCancelOrder 强制取消，若此时订单其实正在撮合，可能"边成交边取消"，
+     *     最终靠 DB 状态机兜底（tradeCompleted/cancelOrder 都校验 TRADING 状态，先到先赢）
      * @param order
      * @return
      */

@@ -9,6 +9,14 @@ import com.bizzan.bitrade.entity.KLine;
 import com.bizzan.bitrade.handler.MarketHandler;
 import com.bizzan.bitrade.service.MarketService;
 
+/*
+ * 【面试要点】行情处理器接口：面向接口编程，便于替换实现（当前为 DefaultCoinProcessor）。
+ * 核心方法分三类：
+ *  1) 实时处理：process(成交明细) 聚合 1min K线与今日摘要；
+ *  2) 定时调度：autoGenerate(切1minK线)、generateKLine(各周期)、resetThumb、update24HVolume；
+ *  3) 状态恢复：initializeThumb/initializeUsdRate（重启后从 MongoDB 恢复）。
+ * addHandler(MarketHandler) 体现观察者模式：处理结果分发给多个存储/推送通道。
+ */
 public interface CoinProcessor {
 
     void setIsHalt(boolean status);
