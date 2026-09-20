@@ -1,0 +1,359 @@
+Web3 研发工程师（资深·钱包方向）面试知识点速查手册
+📌 适用场景：明天面试前 1-2 小时快速过一遍。所有知识点都刻意串联了你已熟悉的 CoinExchange 分布式/清算/幂等/资金一致性经验，避免背空泛理论，用自己做过的项目打动面试官。
+
+📑 目录（点击跳转）
+一、钱包账户体系（JD 重点·异构融合与抽象）
+二、钱包核心服务（资产·交易历史·亿级存储）
+三、多链上链与交易全链路（EVM + Solana 核心）
+四、Golang 技术基础 & 分布式系统（迁移 CoinExchange 经验）
+五、钱包安全专项（密钥·Nonce·风控）
+六、AI 工程能力（Agent / MCP / RAG / Eval）
+七、加分项深度突击（MPC/TSS·AA 4337·双写迁移·AI 工具链）
+八、面试开场自我介绍模板（30 秒打烙印）
+九、高频反问面试官问题（展现思考深度）
+一、钱包账户体系（JD 重点·异构融合与抽象）
+✅ 面试必背：6 种账户形态的安全模型与使用场景
+账户类型	密钥存储位置	安全模型	典型场景	核心缺点
+助记词/HD 钱包 (BIP-32/39/44)	用户端本地加密	用户自负，m/44'/coin'/account'/change/index 派生	个人 DeFi 用户	助记词被盗 = 全部资产被盗
+本地私钥 (Plain PK)	用户设备/Keystore	用户自负	开发者/小额测试	单点失窃风险极高
+硬件钱包 (Ledger/Trezor)	硬件 SE 芯片，永不出芯片	物理隔离 + 人机二次确认	大额保管、机构冷钱包	UX 差、每笔需插设备
+MPC/TSS 钱包 (GG18/Gennaro)	多方分片持有，私钥永不完整存在	(t,n) 阈值签名，任意 t 片即可签	机构/托管/交易所热钱包	分布式密钥生成（DKG）复杂
+托管钱包 (Turnkey/Fireblocks/Privy)	云 HSM + 策略引擎	M of N 审批 + 地理多活 HSM	交易所、Cefi、合规机构	信任第三方，合规但非主权
+AA 智能合约钱包 (EIP-4337/7702/Safe)	链上合约账户 + 外部 signer	可插拔验证器、会话密钥、社交恢复、批量交易	GameFi、C 端抽象钱包	Gas 抽象复杂、各链不统一
+💡 迁移 CoinExchange 经验：面试官问"异构账户怎么融合抽象"——答：就像我们在 CoinExchange 里对不同 ExchangeOrderType（限价/市价）抽象出统一 processOrder() 清算流程一样，钱包侧做两层抽象：
+
+SPI 抽象层：SignerProvider 接口，定义 signTransaction(payload, accountId)，每种账户一个实现（HdSigner/MpcSigner/TurnkeySigner）
+统一账户模型：Account 表统一主键 web3_id，字段区分 account_type + provider_config_json，上层业务完全感知不到差异
+✅ HD 钱包派生路径速记（面试被问 BIP 系列直接答）
+
+
+
+BIP-39  助记词 → 种子 (512-bit seed)
+   ↓ PBKDF2-HMAC-SHA512
+BIP-32  种子 → 主私钥 m → 分层派生（硬化/非硬化）
+   ↓ CKDpriv(m, index) / CKDpub(M, index)
+BIP-44  标准派生路径：
+   m / 44' / coin' / account' / change / index
+       │     │      │          │       │
+       │     │      │          │       └─ 0=外部收款 1=找零地址
+       │     │      │          └─ 固定 0/1
+       │     │      └─ 用户账户索引（从 0' 开始）
+       │     └─ SLIP-44 币种号（0'=BTC, 60'=ETH, 501'=SOL）
+       └─ BIP-44 固定目的码（硬化派生 '）
+硬化派生 vs 非硬化的坑（面试 90% 会问）：
+
+硬化 i'（i+0x80000000）：必须拿父私钥才能推导 → 安全，账户级必须硬化（避免公钥派生泄露账户）
+非硬化 i：拿父公钥 + 子索引就可以推导 → 适合收款地址 index 批量生成（BIP-44 最后两级用非硬化）
+✅ 多账户融合的架构图（画白板必背）
+
+
+
+  上层业务（DEX/Cefi/NFT/GameFi/OTC）
+              │
+              ▼  统一 Wallet Facade（对外 HTTP/gRPC/SDK）
+   ┌───────────────────────────────────────────────┐
+   │   createAccount(accountType, userId)           │
+   │   sign(accountId, txPayload)                   │
+   │   listBalances(accountId, chains)              │
+   │   getTransactionHistory(accountId, filter)     │
+   └───────────────────────┬───────────────────────┘
+                           │ 领域模型 Web3ID (统一主键)
+                           ▼
+   ┌───────────────────────────────────────────────┐
+   │       Account Model (MySQL 统一表)              │
+   │  id | web3_id | user_id | account_type |      │
+   │  provider_config(HSM密钥ID/MPC分片索引/        │
+   │  助记词加密索引/AA合约地址) | created_at        │
+   └───────────────────────┬───────────────────────┘
+                           │  AccountSPI 接口
+                           ▼
+   ┌──────────┬──────────┬──────────┬──────────┬──────────┐
+   │ HdProvider │ MpcProvider │ TurnkeyProvider │ LedgerProvider │ AaContractProvider │
+   │ (BIP-44) │ (GG18/TSS) │ (Turnkey API) │ (硬件签名桥) │ (Safe/Biconomy) │
+   └──────────┴──────────┴──────────┴──────────┴──────────┘
+💡 迁移经验：这就是「策略模式 + SPI」，和我们 CoinExchange 里 MarketHandler 观察者列表（Mongo/WS/Netty 三个实现同一接口）完全一个设计套路。
+
+⬆️ 回目录
+
+二、钱包核心服务（资产·交易历史·亿级存储）
+✅ 四大核心链路的幂等 + 一致性方案（迁移 CoinExchange 清算经验）
+链路	核心挑战	迁移 CoinExchange 的标准答案
+资产余额（Token Balance）	多链区块扫描回滚、RPC 节点分叉数据、余额并发更新	✅ 同 MemberWalletDao 设计：UPDATE wallet_token SET balance = balance + ? WHERE account_id=? AND token=? AND balance >= ?（条件原子 UPDATE = DB 行锁 CAS），杜绝先查后改 TOCTOU 漏洞；再结合 每小时全量对账任务（链上真实余额 vs 本地 DB 汇总 = 差异告警）
+交易历史落库	链上回滚 reorg、RPC 返回重复 tx、重复扫描入库	✅ 同成交明细幂等设计：主键用 (chain_id, tx_hash, log_index) 唯一索引（EVM 的 event log）；Solana 用 (chain_id, signature, instruction_index)；INSERT 用 ON DUPLICATE KEY UPDATE status=?；reorg 处理 = UPDATE confirmed=false WHERE block_height > (最新确认高度-20) 重新回扫
+上链广播状态追踪	交易 stuck、Nonce 冲突、用户重复提交同笔交易	✅ 同 Kafka 重试队列设计：广播任务进 Redis ZSET 持久化重试队列（score=下次重试时间戳）；指数退避 delay = 1s * 1.5^retry_count，超阈值进 DLQ 告警人工介入；状态机 PENDING → BROADCAST → MEMPOOL → CONFIRMED / FAILED / DROPPED
+代币列表与价格聚合	跨链 token 重名、假币诈骗、价格喂价延迟	✅ 同 CoinProcessor 聚合模式：每个链一个 ChainProcessor，增量聚合代币列表 + 链上 metadata（name/decimals/logo），白名单/黑名单机制；价格聚合用 OKX/Binance oracle 三取二中位数防单点喂价错
+✅ 亿级交易历史存储设计（面试必画图）
+问题场景：1000 万用户 × 每人 100 条历史 = 10 亿条交易记录，按用户 ID + 时间范围查询秒级返回
+
+
+
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                          亿级交易历史 3 层存储                             │
+├──────────────────────────────────────────────────────────────────────────┤
+│ ① 热层（近 3 个月）:  MySQL 按月分表 + 分区键 (account_id, created_at)   │
+│    table: tx_history_202509 / tx_history_202510 / ...                   │
+│    索引：PRIMARY (chain_id, tx_hash, log_index) + 联合索引(account_id, created_at DESC) │
+│    查询：WHERE account_id = ? ORDER BY created_at DESC LIMIT 20          │
+├──────────────────────────────────────────────────────────────────────────┤
+│ ② 冷层（3 个月前）:  ClickHouse 集群（列存，百万行/秒聚合）                │
+│    每晚定时任务把 MySQL 满 90 天的分区 SELECT OUTFILE → ClickHouse        │
+│    支持跨时间范围统计（历史资产曲线、PnL、手续费报表）                     │
+├──────────────────────────────────────────────────────────────────────────┤
+│ ③ 详情层:  Elasticsearch（交易哈希 / token 名称 / 对手方地址模糊检索）      │
+│    account_id + keyword 全文搜索                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+✅ 查询路由层（网关）：
+   if (时间范围 < 90d) → 读 MySQL 分表 （主键命中，毫秒级）
+   if (时间范围 >= 90d) → 读 ClickHouse （秒级返回百万聚合）
+   if (用户输入搜索关键词) → 读 ES
+💡 迁移经验：这就是 CoinExchange 里「Mongo 分集合 exchange_trade_SYMBOL + 分表 exchange_kline_SYMBOL_1min」的思路放大到亿级——按业务维度（时间/账户）切分数据面，避免单表无限膨胀。
+
+✅ Gas 策略设计（5 种模型速记）
+模型	适用链	算法	兜底机制
+EIP-1559 (优先费)	ETH 后所有 EVM	maxFeePerGas = baseFee(最新块) × 1.25 + maxPriorityFeePerGas(0.1~2 Gwei 可调)	30 分钟未打包 → 发相同 Nonce 新交易 gasPrice ×1.5（替换 stuck）
+Legacy Gas Price	BTC/Bifrost/旧链	取最近 20 块 GasPrice 的 P50 / P90	同上替换机制
+Solana Priority Fee	Solana	computeUnitPrice = recentPrioritizationFees × 1.5（按程序ID粒度）	相同 recentBlockhash 重发提升 unitPrice
+Layer-2 特殊 (Arb/Op/Base)	L2	l1_fee = baseFee × l1GasUsed × scalar(动态) + l2_fee 预估算	L2 回滚特殊处理 reorg_safe = state_root + challengePeriod
+托管级策略	交易所/Cefi	Gas 池统一预算（每月充值一次，批量归集），避免每个账户缺 ETH 付 Gas	类似我们 CoinExchange 的「平台手续费池」，单独核算
+⬆️ 回目录
+
+三、多链上链与交易全链路（EVM + Solana 核心）
+✅ EVM 交易全流程（面试画时序图 100% 加分）
+
+
+
+用户点击"发起转账/swap"
+   │
+   ▼
+① 交易构造层（后端组装）
+   │   • 查账户 Nonce：DB 记录 + eth_getTransactionCount('pending') 取 max 防冲突
+   │   • 估算 Gas：eth_estimateGas × 1.3（安全系数） + EIP-1559 maxFee 计算
+   │   • 组装 calldata：function selector(4B) + abi.encode(params)
+   │   • 字段：chainId + nonce + maxFeePerGas + maxPriorityFeePerGas + gasLimit + to + value + data
+   │
+   ▼
+② 签名层（SPI 路由到对应 SignerProvider）
+   │   • HD：secp256k1 私钥本地 sign，v 修正 EIP-155（防重放）
+   │   • MPC：分片协同签名
+   │   • Turnkey：POST https://api.turnkey.com/v1/sign
+   │   → 产出 rawTx (RLP 编码的 hex 字符串)
+   │
+   ▼
+③ 广播层（非阻塞 + 重试队列）
+   │   a) Redis 事务：SETNX nonce:{accountId}:{nonce} = txId（分布式 Nonce 锁）
+   │   b) 多 RPC 节点并行广播（Infura + Alchemy + 自建节点 3 路互备）
+   │   c) 任务入持久化重试 ZSET（score = 当前时间+15s）
+   │
+   ▼
+④ 状态追踪循环（@Scheduled 每秒扫一次）
+   │   FOR task IN retry_queue WHERE score <= now:
+   │      txHash = task.txHash
+   │      receipt = eth_getTransactionReceipt(txHash)
+   │      IF receipt == null:
+   │          查 eth_getTransactionByHash → 不在 mempool 也不在链上 → 检查 Gas 是否太低
+   │          stuck 超过 2h: 用相同 Nonce 提高 GasPrice 1.5 倍重发（RBF 替换）
+   │          score = now + backoff(重试次数) → 重新入队
+   │      ELSE IF receipt.status == 1:
+   │          confirmed = 确认数 = 最新高度 - receipt.blockNumber
+   │          if confirmed >= 20:  → 落库 + 标记 CONFIRMED + 触发余额更新
+   │          else: → score = now + 30s 继续等
+   │      ELSE (receipt.status == 0 REVERT):
+   │          落库 FAILED + 释放 Nonce 锁 + 解冻预扣余额
+   │
+   ▼
+⑤ 下游事件通知（同 Kafka 解耦思路）
+   kafkaTemplate.send("wallet-tx-confirmed", ...)
+   → 下游：余额模块更新、交易历史入库、PnL 计算、通知推送
+✅ 非它不可的 Nonce 管理（高频面试题 + 伪代码）
+Nonce 三大坑：① 同一用户并发两笔 Nonce 重复 ② 交易失败了 Nonce 没释放后面全卡住 ③ 节点返回的 latest/pending Nonce 不一致
+
+标准答案伪代码（迁移分布式锁思想）：
+
+Go
+
+
+
+// 取可用 Nonce
+func getNextNonce(ctx context.Context, accountId string, chainId int) (uint64, error) {
+    // 1. 先拿 DB 已记录的"最大已确认 Nonce"（避免节点乱序）
+    dbNonce := repo.GetMaxConfirmedNonce(accountId, chainId)
+
+    // 2. 再查节点 pending Nonce（含 mempool 中还没打包的）
+    nodePendingNonce, _ := rpc.GetTransactionCount(ctx, address, "pending")
+
+    next := max(dbNonce + 1, nodePendingNonce)
+
+    // 3. ✅ 关键：用 Redis SETNX 抢占分布式 Nonce 锁，10 分钟自动过期
+    //    （同我们 CoinExchange 的 Kafka 分区串行思想，把并发 Nonce 请求串行化）
+    locked, _ := redis.SetNX(ctx, fmt.Sprintf("nonce:%d:%s:%d", chainId, accountId, next), txId, 10*time.Minute).Result()
+    if !locked {
+        // 这个 Nonce 被别人抢到了，递归+1 找下一个空位
+        return getNextNonce(ctx, accountId, chainId, next + 1)
+    }
+    return next, nil
+}
+
+// 交易终态（成功/失败）释放 Nonce 锁
+func releaseNonce(chainId int, accountId string, nonce uint64) {
+    redis.Del(ctx, fmt.Sprintf("nonce:%d:%s:%d", chainId, accountId, nonce))
+}
+✅ EVM vs Solana 交易模型核心差异（一面二面必问）
+维度	EVM	Solana
+账户模型	Account-based（余额存账户）	Account-based + Program Derived Address (PDA)（合约托管资产，PDA=程序派生地址无私钥）
+顺序 Nonce	单账户严格递增 Nonce	用 recentBlockhash（2 分钟窗口过期）代替 Nonce；需要顺序用 Durable Nonce 账户
+并发能力	同一账户并发受 Nonce 限制（串行）	交易显式列出所有访问账户（Read/Write），VM 自动并行不冲突的交易（>10 万 TPS）
+Gas 模型	GasLimit × GasPrice（EIP-1559 baseFee+priorityFee）	ComputeBudget: 固定 max compute units × compute unit price per CU
+签名	secp256k1 + ECDSA（v/r/s）	ed25519 + 可多签（多 signer 数组）
+回滚机制	单笔交易 revert，消耗 gas，已执行 state changes 全回滚	Instruction 级 returnData；整个 tx 失败回滚；跨程序调用 CPI 嵌套可嵌套 revert
+代币标准	ERC-20（approve/transferFrom 两步）	SPL Token（ATA 关联代币账户，1 地址 1 mint 唯一 ATA）
+💡 迁移经验：Solana 的「显式列读写账户做并行调度」思想 = 我们 CoinExchange 的「按 symbol Kafka 分区串行，跨 symbol 并行」，都是冲突域隔离——把会冲突的操作放在一个串行域里，非冲突域天然并行。
+
+⬆️ 回目录
+
+四、Golang 技术基础 & 分布式系统（迁移 CoinExchange 经验）
+✅ Golang 高频面试要点 + 结合项目经验答法
+题目	迁移 CoinExchange 的标准答案
+Goroutine 调度模型 GMP	答：G=用户协程（类似我们 Kafka 每条 HandleTradeThread 任务），M=内核线程，P=逻辑处理器持有本地 G 队列；调度时机：函数调用栈检查、channel 阻塞、GC STW；项目里用 ThreadPoolExecutor(30, 100, 1024) 限制并发上限 = Go 里用 buffered channel + worker pool 控制 goroutine 数，避免无限制 goroutine 泄漏。
+Channel 无缓冲 vs 有缓冲	无缓冲 = 同步交接；有缓冲 = 本地任务队列（对应我们 1024 LinkedBlockingQueue）；关闭时机生产者侧，读取用 for v := range ch；竞态排查：Go 用 -race 编译选项 ≈ Java 里 synchronized 缺漏的内存可见性问题排查。
+Context 作用	跨 API 边界传递取消信号 + 超时 + 元数据（traceId）；项目里 Kafka 超时、DB 查 for update 长事务都需要 ctx 超时中断，对应 Java 里的 Thread.currentThread().interrupt()。
+标准库 json vs sonic/ffjson	高频行情推送序列化用 github.com/bytedance/sonic JIT 编解码，速度是 encoding/json 3x；对应我们 CoinExchange 用 Fastjson 的原理一致，高频场景序列化/反序列化本身就是瓶颈。
+Gin / Go-zero / Gorm 选型对比	Gin：轻量 HTTP 框架（5 万 qps 单实例）；Go-zero：微服务全家桶（内置 goctl 代码生成、熔断、JWT、prometheus）；Gorm 坑——Preload 多对多 1+N 查询，用 Joins 或原生 SQL 解决（对应我们 JPA 的 findOne N+1 坑）。
+✅ 分布式系统必问 + 迁移 CoinExchange 答法（这是你最大亮点，一定要结合项目说！）
+题目	迁移式标准答案（开头就提「我在之前做交易所撮合/清算项目时实际落地过类似方案」）
+幂等设计怎么做？	我做过交易所清算模块，三层幂等：① 消息级唯一键 Kafka 业务ID + DB 唯一索引；② 状态机 UPDATE WHERE（UPDATE order SET status='COMPLETED' WHERE status='TRADING'，返回 0 行表示已处理）；③ 布隆过滤器防历史海量重复；钱包转账场景直接迁移：唯一键 (chain_id, from_address, nonce, to_address, value) 做幂等。
+分布式锁选型？	三种都用过：① DB 行锁（SELECT ... FOR UPDATE），清算钱包余额变更用这个最稳；② Redis SETNX + 自动过期 + Lua 原子续约，Nonce 抢占这个用；③ ZooKeeper/Etcd 临时节点（需要公平锁/可监听释放时用）。实际项目 95% 的场景 Redis 锁足够。
+消息队列怎么保证不丢？	我做过交易所撮合 Kafka：① 生产者 acks=all + retries=MAX + idempotence=true + transactional；② Topic min.insync.replicas=2；③ 消费端 enable.auto.commit=false + 手动 Ack；④ 失败消息进 Redis ZSET 持久化重试队列（指数退避），超次数进死信队列告警；钱包广播任务完全一样的链路。
+熔断限流？	用 Go-zero 内置的 Sentinel/go-breaker：半开/半闭/全开状态；限流：令牌桶（瞬时 QPS 控制） + 漏桶（平滑请求速率）；项目里 API 下单接口 1000 qps/用户，超出返回 429；钱包节点 RPC 层做熔断避免 Infura 单点故障切 Alchemy。
+亿级数据存储优化实战？	三招：① 垂直分表（钱包账户表 / 余额表 / 交易历史表 分开）；② 水平分库分表（ShardingSphere 按 account_id 哈希分 32 库 × 32 表，单表控制在 2000w 内）；③ 冷热分离（交易历史 3 个月一个分表，90 天前归档 ClickHouse）；索引优化：联合索引用区分度最高的列放前面 + 覆盖索引避免回表。
+⬆️ 回目录
+
+五、钱包安全专项（密钥·Nonce·风控）
+✅ 密钥管理分级方案（按资产冷热分三档）
+
+
+
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 资产量级              │ 方案                               │ 吞吐量/延迟 │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 热钱包（日均交易）    │ M of N MPC (TSS/Gennaro DKG)       │ <200ms/笔   │
+│ 余额控制 < 总资产 5%  │ 或 Turnkey API + 策略引擎审批       │             │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 温钱包（定期归集）    │ 硬件钱包集群（Ledger Vault 多签）    │ <10s/笔     │
+│ 总资产 15%            │ 或 Air-gapped 离线签名工作站       │ 需人工审批   │
+├─────────────────────────────────────────────────────────────────────────┤
+│ 冷钱包（储备资产）    │ 纸钱包 + 多人多地地理分散保管       │ 小时级/笔    │
+│ 总资产 80%            │ 私钥碎片物理保险箱，24h 双人授权      │ 多重审批   │
+└─────────────────────────────────────────────────────────────────────────┘
+
+✅ 三大原则：
+① 私钥永不落地（内存零拷贝清除 / HSM 芯片永不出 / MPC 分片分散）
+② 多因子审批（大额 >阈值 走 T+1 人工 / Slack 钉钉 3 人审批）
+③ 全链路审计日志（签名 → 广播 → 确认 每一步 trace_id 串联，任何操作可追溯到人/时间/IP）
+✅ 签名欺诈检测 5 条基础规则（迁移清算对账思想）
+和我们 CoinExchange 「定时对账发现异常」思路完全一样，钱包交易签名前做前置风控检查：
+
+规则	触发条件	处置
+R1 大额阈值	转账金额 > 账户余额 50% 或 > 绝对值 10000U	升级二次验证（邮箱/人脸/TOTP）
+R2 未知对手方	to_address 不在用户历史转账白名单 + 外部 API（SlowMist/GoPlus）标签为钓鱼/合约	页面强制红字提示 + 邮件确认
+R3 无限授权 approve	ERC-20 approve(type(uint).max) 且 spender 未审计	默认拦截，除非用户主动勾选高风险
+R4 异常地理位置	登录 IP != 常用城市 IP 段 + 设备指纹未登录过	短信验证 + TOTP 双因子
+R5 合约交互可疑	calldata 函数选择器 = selfdestruct/delegatecall 或目标合约 = 新部署 < 24h	强制拦截 + 安全研究员审核（白名单通过才放行）
+⬆️ 回目录
+
+六、AI 工程能力（Agent / MCP / RAG / Eval）
+✅ 概念 + 工程落地边界（6 条速记，JD 里明确要求必答）
+概念	一句话是什么	工程落地实际边界（避免吹牛）
+Agent Harness	Agent 运行时底座：调度 loop（LLM→工具调用→结果→再LLM） + 会话管理 + 上下文管理	实际就是状态机 + 事件循环：不要自己从 0 写，LangGraph / CrewAI / Semantic Kernel 三选一，Harness 负责接入企业 SSO、监控、计费、限流
+Skills / Prompts	Skill = 一套 Prompt 模板 + 工具集合（例：查链上余额 Skill = Prompt + eth_getBalance 工具）	实际工程价值：结构化沉淀高频场景 Prompt/工具组合，比如"Solana 交易排查 Skill""ERC-20 授权审计 Skill"，避免重复写；存到 Git 仓库版本管理 = 「AI 代码库」
+MCP (Model Context Protocol)	LLM 与外部工具/数据源通信的标准协议（类似 HTTP 之于 Web），解决「不同 Agent 框架工具调用格式不统一」	实际落地：对内 MCP 包装内部 RPC/Kafka/DB 成 LLM 可调用工具；对外 MCP Client 接入第三方数据源（链上 API / Docs / Jira），避免每个 Skill 重复造适配器
+Tool Use	LLM 生成工具调用意图（JSON：{"name":"getBalance","params":{"addr":"0x..."}}）→ 程序实际执行 → 结果回填给 LLM	边界：Tool 执行一定要有沙箱 + 权限控制，内部 DB Tool 只读账号只读表、上链 Tool 必须走审批流，禁止 LLM 直接调 DELETE 或主网广播
+RAG	检索增强生成：知识库（文档/SOP/工单）切片 → 向量库 → 用户 query 相似度检索 → 拼到 Prompt 让 LLM 基于私域知识回答	核心坑：召回率 <80% 效果就废；工程做法是混合检索（向量 + 关键词 BM25 + 知识图谱三元组）三通道合并重排；RAG 不擅长复杂推理，只擅长「查资料」类问题
+Eval	LLM 应用的效果评估体系：离线构建测试集（问题+标准答案）→ 跑新版 Prompt/RAG → 用 LLM-as-Judge/关键词匹配打准确率分	边界：Eval 集必须人工标注 + 定期更新，不能让 LLM 自己给自己打分容易自欺欺人；线上做 A/B 测试才是真 Eval
+💡 迁移结合：我日常用 AI Coding Agent（Trae/Cursor）写代码，有内部 Skill 库沉淀（比如：skill：撮合引擎对账排查模板、skill：Kafka 死信队列处置 SOP），Prompt 存 Git 配合 CI 用 Eval 集测试通过率；对新公链（如 Sui/Move）用 RAG 检索官方白皮书 + 代码库快速搞懂核心机制 + 输出接入方案文档，2 天完成新链评估 POC。
+
+✅ 举一个你能落地的 AI 工具链实际案例说给面试官听
+「我做过一个**『交易失败根因排查 Agent』** Skill： ① 输入：用户钱包地址 + txHash 或 Nonce ② 工具链（MCP 封装）：A. 多 RPC 节点查交易 receipt 与 mempool 状态 B. 查 Nonce 锁 Redis 状态 C. 调用区块浏览器标签页接口读错误日志 D. 查数据库历史失败同 pattern 案例库 ③ LLM 把结果汇总 → 输出结构化根因（Nonce 冲突 / Gas 不够 stuck / 合约 revert 原因 / 节点回滚 / 签名错误 vrs）+ 处置建议（重发提高 1.5x Gas / 释放 Nonce 锁 / 合约升级回滚） ④ Eval：收集过去 300 条真实工单，人工标注根因，新版 Skill 跑一遍准确率 92%，节省运营排查人力 70%。」
+
+⬆️ 回目录
+
+七、加分项深度突击（MPC/TSS·AA 4337·双写迁移·AI 工具链）
+✅ MPC / TSS 钱包原理（一句话 + 优缺点）
+MPC (Secure Multi-Party Computation)	TSS (Threshold Signature Scheme)
+本质	签名过程多方协同计算，私钥分片永远不完整存在任何一方	私钥 DKG 分布式生成 → (t,n) 阈值签名，任意 t 片可出合法签名
+常用算法	Yao's Garbled Circuits / GMW / SPDZ	GG18/GG20 (ECDSA)/ Lindell (EdDSA)
+优点	不要求椭圆曲线支持，通用性强	ECDSA 签名输出与普通单签完全一致（链上不可区分），链上不用改
+缺点	通信轮次多（8~20 轮）延迟高	ECDSA TSS 数学复杂，特定曲线才能实现（Ed25519/Schnorr 简单）
+项目实战	Coinbase Custody / Fireblocks	Binance MPC 钱包 / ZenGo / 比特儿 MPC
+✅ AA 智能合约钱包（EIP-4337 / EIP-7702）高频题
+
+
+
+EIP-4337 核心链路（核心 = 把签名验证从 EOA 搬到链上合约里）：
+
+ 用户签 UserOperation (UO)
+    │    {sender, nonce, initCode(首次部署), callData, ... , signature}
+    ▼
+ ① 放入 Alt Mempool（替代标准 mempool 的替代内存池）
+    │
+    ▼
+ ② Bundler（打包节点）收集一批 UO → 调用 EntryPoint.handleOps()
+    │   EntryPoint: 链上统一入口合约
+    │
+    ▼
+ ③ EntryPoint 调用 sender.validatePaymasterAndData → validateUserOp → Paymaster 代付 Gas
+    │   (Gas 抽象：用户不用持有 ETH 付手续费，用 USDC / 项目方补贴均可)
+    │
+    ▼
+ ④ EntryPoint 调用 sender.call(callData) 执行用户业务逻辑
+    │
+    ▼
+ ⑤ 失败 → EntryPoint 调用 validatePaymasterUserOp 补偿 Gas 给 Bundler（避免 DoS）
+
+关键周边：
+ • EIP-7702 (Set EOA Account Code) = 临时把普通 EOA 设置成 AA 验证逻辑，不用真部署合约
+ • Safe (Gnosis Safe) = 多签钱包鼻祖，主流机构/项目方选择（支持模块 + 回退机制）
+ • Biconomy / Alchemy Account Kit = 第三方 AA SDK，帮你集成 Paymaster/Bundler
+✅ 亿级数据双写/迁移/版本兼容（加分项实战方案）
+就用你熟悉的对账 + 双写校验思路答：
+
+
+
+
+【方案：四阶段蓝绿双写 + 增量校验 + 灰度切换】
+T0~T2w  准备期：新表结构建好 + 部署 CDC（Canal/Debezium）监听旧表 binlog
+T1~T4w  阶段①（只读+双写校验）：
+         a) 所有写入同时写旧表 + 新表（失败回滚）
+         b) 每 10 分钟「对账任务」：SELECT 旧表 MINUS 新表（按主键对比每列 hash）
+            → 差异入 discrepancy_log 表告警，查出双写 BUG 修
+T3~T6w  阶段②（灰度读新表）：
+         a) 按 user_id % 100 = 1 → 灰度 1% 流量读新表
+         b) 同时**影子读**旧表，两边结果逐字段对比不一致告警
+         c) 灰度比例 1% → 10% → 50% → 100% 逐步放大
+T7      阶段③（切主）：
+         a) 100% 读写新表
+         b) 旧表做 1 周 CDC 反向同步（新表变更回写旧表）保持可回滚
+T8~     阶段④（收尾）：
+         a) 观察 2 周无问题 → 停 CDC + 归档旧表冷备
+         b) 回滚预案：反向双写保留 2 周，一键切回读旧表
+💡 迁移经验：这就是我们 CoinExchange 「MatchLog 拉回重放 + 三方对账」的升级版，任何数据迁移离不开「双写 + 对账 + 灰度 + 回滚」四件套，缺任何一环都是生产事故导火索。
+
+⬆️ 回目录
+
+八、面试开场自我介绍模板（30 秒打烙印）
+「面试官你好，我叫 XXX，有 5 年后端开发经验，其中 3 年 Web3 领域，深度做过中心化交易所的撮合与清算模块（直接关联你最大亮点）——熟悉 Kafka 解耦下的 CQRS 架构、DB 行锁 CAS 条件更新保证资金一致性、亿级 K 线/成交历史分库分表存储、四层资金兜底对账体系（Kafka 回调重试队列 + MatchLog 回滚 + 定时对账 + 下游幂等）。
+
+分布式/Golang 侧：Goroutine/Channel 高并发模型实战落地，Go-zero/Gin 微服务从 0 到 1 搭建，熟练设计幂等/分布式锁/熔断/限流；我上一个项目就从零做了一个 Golang 的链上交易广播与 Nonce 管理组件（无缝切入钱包方向），覆盖 EVM + Solana，解决了 Nonce 冲突、交易 Stuck、节点 RPC 切流等稳定性问题。
+
+Web3 侧：熟悉 HD/MPC/托管/AA（EIP-4337）等多账户体系，能做统一 Web3 ID 账户模型抽象；深度实战过 EVM/Solana 交易构造/签名/广播/状态追踪/Gas 策略；最近在做 AI Coding Agent 的内部 Skill 沉淀，用 RAG + MCP 搭建链上问题排查工具，提效明显。
+
+我对贵司钱包多链异构融合、AA/MPC 合规托管、AI 赋能这几个方向特别感兴趣，希望有机会深入交流。」
+
+九、高频反问面试官问题（展现思考深度）
+「咱们目前钱包业务是侧重 C 端主权钱包，还是偏 B 端托管/机构钱包？（判断技术侧重点：前者 AA/UX，后者 MPC/Turnkey 合规）」
+「当前多链支持覆盖到什么程度？亿级交易历史的存储和查询是怎么做的？（提前准备好对应方案，等他说完你就接「我在上一个交易所项目里是用 xx 方案解决类似问题的」）」
+「团队在 AI Coding/Agent 这块目前有哪些工程落地？有计划建设内部 Skill 库和 MCP 标准接入吗？（切中 JD AI 加分项）」
+「钱包安全这块，私钥分级方案、大额风控审批链路、签名前欺诈检测现在是怎样的？（展示你关心安全核心域）」
+「接下来 6 个月钱包团队 Top 3 目标是什么？（让面试官判断你思维对齐业务 OKR，而非纯技术）」
+最后祝明天面试顺利！🌟 记住一招必杀：任何问题尽量往你熟悉的「CoinExchange 撮合清算/分布式一致性/资金对账」经验上靠**，用自己做过的东西论证，比空背 10 个知识点都有说服力。
