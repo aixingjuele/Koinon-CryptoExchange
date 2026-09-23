@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-scheme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Arya Markdown Editor">
+  <title>未命名文档</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>
+:root {
+  --c-cta-active: #0c0a09;
+  --c-sidebar-text: #57534e;
+  --c-cta-hover: #2e2a26;
+  --c-cta: #1c1917;
+  --c-text-a06: rgba(28,25,23,0.06);
+  --c-border-hair: rgba(28,25,23,0.07);
+  --c-text-3: #8a847c;
+  --c-shadow-pill: 0 1px 2px rgba(28,25,23,0.05),0 6px 16px fade(#1c1917,4%);
+  --c-text-a92: rgba(28,25,23,0.92);
+  --c-sidebar-hover: rgba(28,25,23,0.04);
+  --c-border-grey: rgba(28,25,23,0.1);
+  --c-deep: #1c1917;
+  --c-text-a08: rgba(28,25,23,0.08);
+  --c-preview-bg: #f6f2eb;
+  --c-text-a22: rgba(28,25,23,0.22);
+  --c-white: #fffcf7;
+  --c-text-2: #57534e;
+  --c-text-a04: rgba(28,25,23,0.04);
+  --c-text-a12: rgba(28,25,23,0.12);
+  --c-highlight: #f5e14a;
+  --c-text-a05: rgba(28,25,23,0.05);
+  --c-input: #efebe3;
+  --c-icon-primary: #44403c;
+  --c-shadow-lg: 0 16px 48px rgba(28,25,23,0.1),0 4px 12px fade(#1c1917,4%);
+  --c-text-a03: rgba(28,25,23,0.03);
+  --c-black: #1c1917;
+  --c-nav: rgba(255,252,247,0.84);
+  --c-yellow: #f5e14a;
+  --c-paper: #fffcf7;
+  --c-brand: #1c1917;
+  --c-grey: #efebe3;
+  --c-brand-hover: #2e2a26;
+  --c-orange: #c48a3a;
+  --c-shadow-xs: 0 1px 2px rgba(28,25,23,0.04);
+  --c-border-black: #d6d1c7;
+  --c-red: #c23b2e;
+  --c-brand-soft-strong: rgba(28,25,23,0.1);
+  --c-text-grey: #57534e;
+  --c-focus-ring-color: rgba(28,25,23,0.22);
+  --c-page-a72: rgba(247,244,238,0.72);
+  --c-cta-fg: #fffcf7;
+  --c-red-hover: #cf4335;
+  --c-glass-strong: rgba(255,252,247,0.9);
+  --c-scrim: rgba(28,25,23,0.38);
+  --c-overlay: rgba(28,25,23,0.18);
+  --c-glass: rgba(247,244,238,0.78);
+  --c-text-a35: rgba(28,25,23,0.35);
+  --c-grey-fill: #efebe3;
+  --c-highlight-soft: rgba(245,225,74,0.5);
+  --c-separator: rgba(28,25,23,0.06);
+  --c-sidebar-text-active: #1c1917;
+  --c-light-black: #44403c;
+  --c-red-active: #b2362a;
+  --c-text: #1c1917;
+  --c-red-soft: rgba(194,59,46,0.12);
+  --c-sidebar-border: rgba(28,25,23,0.07);
+  --c-brand-soft: rgba(28,25,23,0.06);
+  --c-elevated: #fffcf7;
+  --c-paper-side: #f1ede5;
+  --c-scrollbar-hover: rgba(28,25,23,0.22);
+  --c-icon: #8a847c;
+  --c-text-a18: rgba(28,25,23,0.18);
+  --c-page-glow: radial-gradient(ellipse 90% 55% at 50% -18%,rgba(245,220,170,0.42),transparent 62%),radial-gradient(ellipse 45% 36% at 100% 0%,rgba(255,236,214,0.3),transparent 55%);
+  --c-shadow-sm: 0 1px 2px rgba(28,25,23,0.04),0 8px 24px fade(#1c1917,4.5%);
+  --c-paper-a96: rgba(255,252,247,0.96);
+  --c-brand-active: #0c0a09;
+  --c-scrollbar: rgba(28,25,23,0.12);
+  --c-green: #5a8f6b;
+  --c-sidebar-active: #fffcf7;
+  --c-page: #f7f4ee;
+  --c-sidebar-bg: #f1ede5;
+  --c-shadow-md: 0 8px 28px rgba(28,25,23,0.08),0 2px 6px fade(#1c1917,4%);
+  --c-shadow-focus: 0 0 0 3px rgba(28,25,23,0.08);
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--c-page, #f7f4ee);
+  color: var(--c-text, #1c1917);
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+article.vditor-reset {
+  box-sizing: border-box;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+  font-size: 17px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+article.vditor-reset img,
+article.vditor-reset svg,
+article.vditor-reset video {
+  max-width: 100%;
+  height: auto;
+}
+article.vditor-reset img {
+  display: block;
+}
+article.vditor-reset [data-processed] {
+  max-width: 100%;
+  overflow: auto;
+}
+article.vditor-reset h1 {
+  text-align: center;
+}
+article.vditor-reset a {
+  color: inherit;
+}
+article.vditor-reset pre {
+  overflow: auto;
+  padding: 1em;
+  border-radius: 8px;
+  background: var(--c-grey, #f3f1ec);
+  color: var(--c-text, #1c1917);
+}
+article.vditor-reset code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+article.vditor-reset table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+}
+article.vditor-reset th,
+article.vditor-reset td {
+  border: 1px solid var(--c-border-grey, #e7e3db);
+  padding: 8px 12px;
+}
+article.vditor-reset blockquote {
+  margin: 1em 0;
+  padding: 0 1em;
+  color: var(--c-text-2, #57534e);
+  border-left: 3px solid var(--c-separator, #e7e3db);
+}
+article.vditor-reset hr {
+  border: 0;
+  height: 1px;
+  background: var(--c-separator, #e7e3db);
+}
+article.vditor-reset input[type='checkbox'] {
+  margin-right: 0.4em;
+}
+@media print {
+  html, body { background: #fff; }
+  article.vditor-reset { max-width: none; padding: 0; }
+}
+.hljs-comment, .hljs-quote { color: #6a737d; }
+.hljs-keyword, .hljs-selector-tag, .hljs-deletion { color: #d73a49; }
+.hljs-string, .hljs-attr, .hljs-addition { color: #032f62; }
+.hljs-number, .hljs-literal, .hljs-variable { color: #005cc5; }
+.hljs-title, .hljs-section { color: #6f42c1; }
+.hljs-built_in, .hljs-type { color: #e36209; }
+.vditor-preview > .vditor-reset { padding: 10px; margin: 0px auto; }
+.vditor-reset { color: rgb(36, 41, 46); font-variant-ligatures: no-common-ligatures; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", "Hiragino Sans GB", "Microsoft Yahei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; overflow-wrap: break-word; overflow: auto; line-height: 1.5; font-size: 16px; word-break: break-word; }
+.vditor-reset--anchor { padding-left: 20px; }
+.vditor-reset--error { color: rgb(210, 63, 49); font-size: 12px; display: block; line-height: 16px; }
+.vditor-reset ul ul ul { list-style-type: square; }
+.vditor-reset ul ul { list-style-type: circle; }
+.vditor-reset ul { list-style-type: disc; }
+.vditor-reset ol, .vditor-reset ul { padding-left: 2em; margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset li + li { margin-top: 0.25em; }
+.vditor-reset li p { margin-top: 16px; }
+.vditor-reset audio { max-width: 100%; }
+.vditor-reset audio:focus { outline: none; }
+.vditor-reset video { max-height: 90vh; max-width: 100%; }
+.vditor-reset img { max-width: 100%; }
+.vditor-reset img.emoji { cursor: auto; max-width: 20px; vertical-align: sub; }
+.vditor-reset h1, .vditor-reset h2, .vditor-reset h3, .vditor-reset h4, .vditor-reset h5, .vditor-reset h6 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
+.vditor-reset h1:hover .vditor-anchor svg, .vditor-reset h2:hover .vditor-anchor svg, .vditor-reset h3:hover .vditor-anchor svg, .vditor-reset h4:hover .vditor-anchor svg, .vditor-reset h5:hover .vditor-anchor svg, .vditor-reset h6:hover .vditor-anchor svg { visibility: visible; }
+.vditor-reset h1 { font-size: 1.75em; }
+.vditor-reset h2 { font-size: 1.55em; }
+.vditor-reset h3 { font-size: 1.38em; }
+.vditor-reset h4 { font-size: 1.25em; }
+.vditor-reset h5 { font-size: 1.13em; }
+.vditor-reset h6 { font-size: 1em; }
+.vditor-reset hr { height: 2px; padding: 0px; margin: 24px 0px; background-color: rgb(234, 236, 239); border: 0px; }
+.vditor-reset p { margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset blockquote { padding: 0px 1em; color: rgb(106, 115, 125); border-left: 0.25em solid rgb(234, 236, 239); margin: 0px 0px 16px; }
+.vditor-reset blockquote > :first-child { margin-top: 0px; }
+.vditor-reset blockquote > :last-child { margin-bottom: 0px; }
+.vditor-reset ins > iframe { border: 0px; }
+.vditor-reset iframe { border: 1px solid rgb(209, 213, 218); max-width: 100%; box-sizing: border-box; }
+.vditor-reset iframe.iframe__video { min-width: 80%; min-height: 36vh; }
+.vditor-reset table { border-collapse: collapse; empty-cells: show; margin-bottom: 16px; overflow: auto; border-spacing: 0px; display: block; word-break: keep-all; width: 100%; }
+.vditor-reset table tr { background-color: rgb(250, 251, 252); border-top: 1px solid rgb(198, 203, 209); }
+.vditor-reset table td, .vditor-reset table th { padding: 6px 13px; border: 1px solid rgb(223, 226, 229); word-break: normal; white-space: nowrap; }
+.vditor-reset table td:first-child::after, .vditor-reset table th:first-child::after { content: ""; display: inline-block; vertical-align: top; min-height: 24px; }
+.vditor-reset table th { font-weight: 600; }
+.vditor-reset table tbody tr:nth-child(2n) { background-color: rgb(255, 255, 255); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { padding: 0.2em 0.4em; margin: 0px; font-size: 85%; border-radius: 3px; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; word-break: break-word; background-size: 20px 20px; white-space: pre-wrap; }
+.vditor-reset pre { margin: 1em 0px; }
+.vditor-reset pre > code { margin: 0px; font-size: 85%; padding: 0.5em; border-radius: 5px; display: block; overflow: auto; white-space: pre; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; background-size: 20px 20px; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AgMAAABHkjHhAAAACVBMVEWAgIBaWlo+Pj7rTFvWAAAAA3RSTlMHCAw+VhR4AAAA+klEQVQoz4WSMW7EQAhFPxKWNh2FCx+HkaZI6RRb5DYbyVfIJXLKDCFoMbaTKSw/8ZnPAPjaH2xgZcUNUDADD7D9LtDBCLZ45fbkvo/30K8yeI64pPwl6znd/3n/Oe93P3ho9qeh72btTFzqkz0rsJle8Zr81OLEwZ1dv/713uWqvu2pl+k0fy7MWtj9r/tN5q/02z89qa/L4Dc2LvM93kezPfXlME/O86EbY/V9GB9ePX8G1/6W+/9h1dq/HGfTfzT3j/xNo7522Bfnqe5jO/fvhVthlfk434v3iO9zG/UOphyPeinPl1J8Gtaa7xPTa/Dk+RIs4deMvwGvcGsmsCvJ0AAAAABJRU5ErkJggg=="); word-break: normal; overflow-wrap: normal; }
+.vditor-reset pre:hover div.vditor-copy { display: block; }
+.vditor-reset .language-abc, .vditor-reset .language-echarts, .vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-math, .vditor-reset .language-mermaid, .vditor-reset .language-mindmap, .vditor-reset .language-plantuml, .vditor-reset .language-smiles { margin-bottom: 16px; }
+.vditor-reset .language-math mjx-container:focus { outline: none; cursor: context-menu; }
+.vditor-reset .language-math .katex-display > .katex > .katex-html > .tag { display: inline-block; font-size: 1.21rem; right: 2px; }
+.vditor-reset .language-echarts, .vditor-reset .language-mindmap { overflow: hidden; height: 420px; }
+.vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-mermaid { text-align: center; }
+.vditor-reset .language-graphviz parsererror { overflow: auto; }
+.vditor-reset kbd { display: inline-block; padding: 3px 5px; font: 11px / 10px Consolas, "Liberation Mono", Menlo, Courier, monospace; color: rgb(36, 41, 46); vertical-align: middle; background-color: rgb(250, 251, 252); border: 1px solid rgb(209, 213, 218); border-radius: 3px; box-shadow: rgb(209, 213, 218) 0px -1px 0px inset; }
+.vditor-reset summary { cursor: pointer; }
+.vditor-reset summary:focus { outline: none; }
+.vditor-reset svg { height: auto; width: auto; stroke-width: initial; }
+.vditor-reset blockquote:last-child, .vditor-reset hr:last-child, .vditor-reset ol:last-child, .vditor-reset p:last-child, .vditor-reset pre:last-child, .vditor-reset ul:last-child { margin-bottom: 0px; }
+.vditor-wysiwyg, .vditor-wysiwyg pre.vditor-reset { box-sizing: border-box; }
+.vditor-wysiwyg pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; }
+.vditor-wysiwyg pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-wysiwyg pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-wysiwyg pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-wysiwyg pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-wysiwyg .vditor-toc::before, .vditor-wysiwyg > .vditor-reset > h1::before, .vditor-wysiwyg > .vditor-reset > h2::before, .vditor-wysiwyg > .vditor-reset > h3::before, .vditor-wysiwyg > .vditor-reset > h4::before, .vditor-wysiwyg > .vditor-reset > h5::before, .vditor-wysiwyg > .vditor-reset > h6::before, .vditor-wysiwyg div.vditor-wysiwyg__block::before, .vditor-wysiwyg div[data-type="footnotes-block"]::before, .vditor-wysiwyg div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-wysiwyg > .vditor-reset > h2::before { content: "H2"; }
+.vditor-wysiwyg > .vditor-reset > h3::before { content: "H3"; }
+.vditor-wysiwyg > .vditor-reset > h4::before { content: "H4"; }
+.vditor-wysiwyg > .vditor-reset > h5::before { content: "H5"; }
+.vditor-wysiwyg > .vditor-reset > h6::before { content: "H6"; }
+.vditor-ir pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; box-sizing: border-box; }
+.vditor-ir pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-ir pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-ir pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-ir pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-ir pre.vditor-reset pre { margin: 0px; }
+.vditor-ir .vditor-reset > h1::before, .vditor-ir .vditor-reset > h2::before, .vditor-ir .vditor-reset > h3::before, .vditor-ir .vditor-reset > h4::before, .vditor-ir .vditor-reset > h5::before, .vditor-ir .vditor-reset > h6::before, .vditor-ir .vditor-toc::before, .vditor-ir div[data-type="footnotes-block"]::before, .vditor-ir div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-ir .vditor-reset > h2::before { content: "H2"; }
+.vditor-ir .vditor-reset > h3::before { content: "H3"; }
+.vditor-ir .vditor-reset > h4::before { content: "H4"; }
+.vditor-ir .vditor-reset > h5::before { content: "H5"; }
+.vditor-ir .vditor-reset > h6::before { content: "H6"; }
+.export-page .vditor-reset h1 { text-align: center; }
+.vditor-reset { color: var(--c-text) !important; }
+.vditor-reset h1, .vditor-reset h2 { border-bottom-color: var(--c-separator) !important; }
+.vditor-reset hr { background-color: var(--c-separator) !important; }
+.vditor-reset blockquote { color: var(--c-text-2) !important; border-left-color: var(--c-separator) !important; }
+.vditor-reset table, .vditor-reset table td, .vditor-reset table th { border-color: var(--c-border-grey) !important; }
+.vditor-reset table th, .vditor-reset table tr:nth-child(2n) { background-color: var(--c-grey) !important; }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { border-color: var(--c-border-hair); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma), .vditor-reset kbd, .vditor-reset pre, .vditor-reset pre > code { background-color: var(--c-grey) !important; color: var(--c-text) !important; }
+.vditor-reset kbd { border-color: var(--c-border-grey) !important; box-shadow: inset 0 -1px 0 var(--c-border-grey) !important; }
+.vditor-reset a { color: var(--c-text) !important; }
+.vditor-preview > .vditor-reset { padding: 10px; margin: 0px auto; }
+.vditor-reset { color: rgb(36, 41, 46); font-variant-ligatures: no-common-ligatures; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", "Hiragino Sans GB", "Microsoft Yahei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; overflow-wrap: break-word; overflow: auto; line-height: 1.5; font-size: 16px; word-break: break-word; }
+.vditor-reset--anchor { padding-left: 20px; }
+.vditor-reset--error { color: rgb(210, 63, 49); font-size: 12px; display: block; line-height: 16px; }
+.vditor-reset ul ul ul { list-style-type: square; }
+.vditor-reset ul ul { list-style-type: circle; }
+.vditor-reset ul { list-style-type: disc; }
+.vditor-reset ol, .vditor-reset ul { padding-left: 2em; margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset li + li { margin-top: 0.25em; }
+.vditor-reset li p { margin-top: 16px; }
+.vditor-reset audio { max-width: 100%; }
+.vditor-reset audio:focus { outline: none; }
+.vditor-reset video { max-height: 90vh; max-width: 100%; }
+.vditor-reset img { max-width: 100%; }
+.vditor-reset img.emoji { cursor: auto; max-width: 20px; vertical-align: sub; }
+.vditor-reset h1, .vditor-reset h2, .vditor-reset h3, .vditor-reset h4, .vditor-reset h5, .vditor-reset h6 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
+.vditor-reset h1:hover .vditor-anchor svg, .vditor-reset h2:hover .vditor-anchor svg, .vditor-reset h3:hover .vditor-anchor svg, .vditor-reset h4:hover .vditor-anchor svg, .vditor-reset h5:hover .vditor-anchor svg, .vditor-reset h6:hover .vditor-anchor svg { visibility: visible; }
+.vditor-reset h1 { font-size: 1.75em; }
+.vditor-reset h2 { font-size: 1.55em; }
+.vditor-reset h3 { font-size: 1.38em; }
+.vditor-reset h4 { font-size: 1.25em; }
+.vditor-reset h5 { font-size: 1.13em; }
+.vditor-reset h6 { font-size: 1em; }
+.vditor-reset hr { height: 2px; padding: 0px; margin: 24px 0px; background-color: rgb(234, 236, 239); border: 0px; }
+.vditor-reset p { margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset blockquote { padding: 0px 1em; color: rgb(106, 115, 125); border-left: 0.25em solid rgb(234, 236, 239); margin: 0px 0px 16px; }
+.vditor-reset blockquote > :first-child { margin-top: 0px; }
+.vditor-reset blockquote > :last-child { margin-bottom: 0px; }
+.vditor-reset ins > iframe { border: 0px; }
+.vditor-reset iframe { border: 1px solid rgb(209, 213, 218); max-width: 100%; box-sizing: border-box; }
+.vditor-reset iframe.iframe__video { min-width: 80%; min-height: 36vh; }
+.vditor-reset table { border-collapse: collapse; empty-cells: show; margin-bottom: 16px; overflow: auto; border-spacing: 0px; display: block; word-break: keep-all; width: 100%; }
+.vditor-reset table tr { background-color: rgb(250, 251, 252); border-top: 1px solid rgb(198, 203, 209); }
+.vditor-reset table td, .vditor-reset table th { padding: 6px 13px; border: 1px solid rgb(223, 226, 229); word-break: normal; white-space: nowrap; }
+.vditor-reset table td:first-child::after, .vditor-reset table th:first-child::after { content: ""; display: inline-block; vertical-align: top; min-height: 24px; }
+.vditor-reset table th { font-weight: 600; }
+.vditor-reset table tbody tr:nth-child(2n) { background-color: rgb(255, 255, 255); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { padding: 0.2em 0.4em; margin: 0px; font-size: 85%; border-radius: 3px; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; word-break: break-word; background-size: 20px 20px; white-space: pre-wrap; }
+.vditor-reset pre { margin: 1em 0px; }
+.vditor-reset pre > code { margin: 0px; font-size: 85%; padding: 0.5em; border-radius: 5px; display: block; overflow: auto; white-space: pre; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; background-size: 20px 20px; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AgMAAABHkjHhAAAACVBMVEWAgIBaWlo+Pj7rTFvWAAAAA3RSTlMHCAw+VhR4AAAA+klEQVQoz4WSMW7EQAhFPxKWNh2FCx+HkaZI6RRb5DYbyVfIJXLKDCFoMbaTKSw/8ZnPAPjaH2xgZcUNUDADD7D9LtDBCLZ45fbkvo/30K8yeI64pPwl6znd/3n/Oe93P3ho9qeh72btTFzqkz0rsJle8Zr81OLEwZ1dv/713uWqvu2pl+k0fy7MWtj9r/tN5q/02z89qa/L4Dc2LvM93kezPfXlME/O86EbY/V9GB9ePX8G1/6W+/9h1dq/HGfTfzT3j/xNo7522Bfnqe5jO/fvhVthlfk434v3iO9zG/UOphyPeinPl1J8Gtaa7xPTa/Dk+RIs4deMvwGvcGsmsCvJ0AAAAABJRU5ErkJggg=="); word-break: normal; overflow-wrap: normal; }
+.vditor-reset pre:hover div.vditor-copy { display: block; }
+.vditor-reset .language-abc, .vditor-reset .language-echarts, .vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-math, .vditor-reset .language-mermaid, .vditor-reset .language-mindmap, .vditor-reset .language-plantuml, .vditor-reset .language-smiles { margin-bottom: 16px; }
+.vditor-reset .language-math mjx-container:focus { outline: none; cursor: context-menu; }
+.vditor-reset .language-math .katex-display > .katex > .katex-html > .tag { display: inline-block; font-size: 1.21rem; right: 2px; }
+.vditor-reset .language-echarts, .vditor-reset .language-mindmap { overflow: hidden; height: 420px; }
+.vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-mermaid { text-align: center; }
+.vditor-reset .language-graphviz parsererror { overflow: auto; }
+.vditor-reset kbd { display: inline-block; padding: 3px 5px; font: 11px / 10px Consolas, "Liberation Mono", Menlo, Courier, monospace; color: rgb(36, 41, 46); vertical-align: middle; background-color: rgb(250, 251, 252); border: 1px solid rgb(209, 213, 218); border-radius: 3px; box-shadow: rgb(209, 213, 218) 0px -1px 0px inset; }
+.vditor-reset summary { cursor: pointer; }
+.vditor-reset summary:focus { outline: none; }
+.vditor-reset svg { height: auto; width: auto; stroke-width: initial; }
+.vditor-reset blockquote:last-child, .vditor-reset hr:last-child, .vditor-reset ol:last-child, .vditor-reset p:last-child, .vditor-reset pre:last-child, .vditor-reset ul:last-child { margin-bottom: 0px; }
+.vditor-wysiwyg, .vditor-wysiwyg pre.vditor-reset { box-sizing: border-box; }
+.vditor-wysiwyg pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; }
+.vditor-wysiwyg pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-wysiwyg pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-wysiwyg pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-wysiwyg pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-wysiwyg .vditor-toc::before, .vditor-wysiwyg > .vditor-reset > h1::before, .vditor-wysiwyg > .vditor-reset > h2::before, .vditor-wysiwyg > .vditor-reset > h3::before, .vditor-wysiwyg > .vditor-reset > h4::before, .vditor-wysiwyg > .vditor-reset > h5::before, .vditor-wysiwyg > .vditor-reset > h6::before, .vditor-wysiwyg div.vditor-wysiwyg__block::before, .vditor-wysiwyg div[data-type="footnotes-block"]::before, .vditor-wysiwyg div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-wysiwyg > .vditor-reset > h2::before { content: "H2"; }
+.vditor-wysiwyg > .vditor-reset > h3::before { content: "H3"; }
+.vditor-wysiwyg > .vditor-reset > h4::before { content: "H4"; }
+.vditor-wysiwyg > .vditor-reset > h5::before { content: "H5"; }
+.vditor-wysiwyg > .vditor-reset > h6::before { content: "H6"; }
+.vditor-ir pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; box-sizing: border-box; }
+.vditor-ir pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-ir pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-ir pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-ir pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-ir pre.vditor-reset pre { margin: 0px; }
+.vditor-ir .vditor-reset > h1::before, .vditor-ir .vditor-reset > h2::before, .vditor-ir .vditor-reset > h3::before, .vditor-ir .vditor-reset > h4::before, .vditor-ir .vditor-reset > h5::before, .vditor-ir .vditor-reset > h6::before, .vditor-ir .vditor-toc::before, .vditor-ir div[data-type="footnotes-block"]::before, .vditor-ir div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-ir .vditor-reset > h2::before { content: "H2"; }
+.vditor-ir .vditor-reset > h3::before { content: "H3"; }
+.vditor-ir .vditor-reset > h4::before { content: "H4"; }
+.vditor-ir .vditor-reset > h5::before { content: "H5"; }
+.vditor-ir .vditor-reset > h6::before { content: "H6"; }
+.export-page .vditor-reset h1 { text-align: center; }
+.vditor-reset { color: var(--c-text) !important; }
+.vditor-reset h1, .vditor-reset h2 { border-bottom-color: var(--c-separator) !important; }
+.vditor-reset hr { background-color: var(--c-separator) !important; }
+.vditor-reset blockquote { color: var(--c-text-2) !important; border-left-color: var(--c-separator) !important; }
+.vditor-reset table, .vditor-reset table td, .vditor-reset table th { border-color: var(--c-border-grey) !important; }
+.vditor-reset table th, .vditor-reset table tr:nth-child(2n) { background-color: var(--c-grey) !important; }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { border-color: var(--c-border-hair); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma), .vditor-reset kbd, .vditor-reset pre, .vditor-reset pre > code { background-color: var(--c-grey) !important; color: var(--c-text) !important; }
+.vditor-reset kbd { border-color: var(--c-border-grey) !important; box-shadow: inset 0 -1px 0 var(--c-border-grey) !important; }
+.vditor-reset a { color: var(--c-text) !important; }
+.preview-vditor #khaleesi .vditor-preview .vditor-reset h1 { text-align: center; }
+@media (max-width: 768px) {
+.preview-vditor .vditor-reset table { display: inline-block; overflow-x: auto; }
+}
+  </style>
+</head>
+<body>
+  <article class="vditor-reset"><h1 id="_0">交易所热钱包Nonce防卡 &amp; RBF交易判断方案（面试版+代码落地思路） 结合你项目已有「Redis锁+DB唯一索引Nonce管理」「提币四步流程」的基础，按Gate/OKX一线交易所的标准拆解，面试时可以直接按「 根因→四层方案→RBF双场景判断→项目改造点 」的逻辑讲</h1>
+<h2 id="_1">一、先讲Nonce卡住的根因（面试开场10秒定调）</h2>
+<p>EVM链（ETH/BSC/Polygon等） 强制要求同一地址的交易Nonce必须连续递增且唯一 ：</p>
+<ul>
+<li>你发了Nonce=5的交易但gas太低没进块，后面Nonce=6/7/8的交易哪怕gas拉满，也会卡在mempool里，矿池永远不会打包（因为Nonce跳号了）</li>
+<li>交易所热钱包单地址QPS高的时候，只要1笔交易卡壳，后面几十上百笔用户提币全挂，属于P0级事故</li>
+</ul>
+<h2 id="_4">二、避免Nonce卡住的四层落地（Gate/OKX标准方案）</h2>
+<h3 id="_5">第1层：架构层分散压力（从根上降低单点卡壳影响） 核心思路：不要把所有提币压在一个热钱包地址上</h3>
+<p>方案 细节要求 你项目的改造点 多热钱包分片池 同一条链/币种部署N个热钱包地址（比如ETH主网准备50个地址），按<code>用户ID % N</code> /轮询/负载均衡分配， 一个地址卡了不影响其他49个 在你的<code>Wallet</code> 表加<code>status</code> /<code>load_weight</code> 字段，新增<code>热钱包地址分配服务</code> ，提币时先分配地址再走后续流程 中心化Nonce分配服务 禁止提币服务直接查链上Nonce，单独做<code>WalletNonceService</code> ，分配流程：<br>
+1）加Redis分布式锁：<code>nonce:lock:{chain}:{address}</code> （1s过期防死锁）<br>
+2）读Redis缓存Nonce，没有就调用<code>eth_getTransactionCount(address, 'pending')</code> 拉取含pending的真实Nonce （重点：不能用<code>latest</code> ，会跳过已发未打包的交易）<br>
+3）Nonce+1写回Redis，同时写MySQL<code>nonce_record</code> 表（ 唯一索引：chain+address+nonce ，防重复分配）<br>
+4）释放锁返回Nonce 基于你项目已有的「Redis分布式锁+DB唯一索引」扩展：<br>
+1）把提币服务里的Nonce查询逻辑抽成独立Service<br>
+2）新增<code>校准接口</code> ：每5分钟从链上拉pending Nonce和Redis/DB对齐，防止缓存不一致</p>
+<h3 id="_7">第2层：发送层降低卡壳概率（让交易尽量一次进块）</h3>
+<ol>
+<li>Gas动态估算（拒绝写死）
+<ul>
+<li>调用<code>eth_gasPrice</code> /第三方预言机（Blocknative/Etherscan），分快/中/慢三档，提币默认用 中档+10%溢价</li>
+<li>设最低阈值：gasPrice ≥ 当前链中档gasPrice的90%，防止给太低直接进不了mempool</li>
+<li>EIP-1559交易：<code>maxPriorityFeePerGas</code> 设中档+20%，<code>maxFeePerGas</code> 设当前baseFee的2倍，给后续RBF留提价空间</li>
+</ul>
+</li>
+<li>预广播校验（无效交易直接打回）
+<ul>
+<li>发交易前先调用<code>eth_estimateGas</code> ，报错（余额不足/合约失败）直接打回提币申请， 不要发无效交易占Nonce</li>
+</ul>
+</li>
+<li>多节点广播（防止单点节点漏收）
+<ul>
+<li>同时广播给：自己的全节点 + Infura/Alchemy第三方节点 + 矿池直连RPC（比如Ethermine/F2Pool），增加被mempool接收的概率</li>
+</ul>
+</li>
+</ol>
+<h3 id="_9">第3层：监控层提前发现问题（不要等用户投诉）</h3>
+<ul>
+<li>每笔交易发出去后起 延迟任务轮询状态 ：每10秒调一次<code>eth_getTransactionReceipt(txHash)</code></li>
+<li>触发告警条件（满足任意一条就推企业微信/短信）：
+<ol>
+<li>交易pending &gt; 15分钟（ETH主网）/ 5分钟（BSC/Polygon）</li>
+<li>当前链中档gasPrice已上涨超过本交易gasPrice的30%</li>
+<li>热钱包地址pending交易数 &gt; 50笔</li>
+</ol>
+</li>
+</ul>
+<h3 id="_11">第4层：兜底层（就算卡了也能快速解卡）</h3>
+<p>按优先级从高到低：</p>
+<ol>
+<li>RBF替换（优先用，成本最低） ：同Nonce提gas重发（下一章详细讲判断逻辑）</li>
+<li>CPFP带打包（RBF失败时用） ：用卡住的地址发一笔 Nonce=卡壳Nonce+1 的自转账交易（转0ETH就行），gasPrice拉满到当前最高档的2倍，矿池为了赚子交易的高gas，会顺便把父交易（卡壳的那笔）一起打包</li>
+<li>Nonce紧急重置（极端情况用） ：管理员后台一键对齐：
+<ul>
+<li>先调<code>eth_getTransactionCount(address, 'pending')</code> 拿链上真实Nonce</li>
+<li>强制覆盖Redis+DB里的Nonce记录</li>
+<li>把该地址所有待发送交易重新分配Nonce（全程加分布式锁）</li>
+</ul>
+</li>
+</ol>
+<h2 id="_14">三、RBF交易的判断逻辑（分提币/充值两个场景） ⚠️ 注意：EVM链和比特币RBF规则不一样——比特币需要交易设置<code>nSequence &lt; 0xFFFFFFFE</code> 才能RBF，EVM链 不需要显式开任何标志 ，只要同地址同Nonce发一笔gas更高的交易，大多数节点（Geth默认开启）会自动替换旧交易</h2>
+<h3 id="_15">场景1：提币场景（我们发交易，判断要不要RBF加速） 四个必要条件（同时满足才触发RBF）：</h3>
+<p>条件 判断方法 阈值参考（ETH主网） 1. 交易确实还在pending <code>eth_getTransactionReceipt(txHash)</code> 返回null，且<code>eth_getTransactionByHash(txHash)</code> 的<code>blockNumber</code> 为null 无 2. 超时未打包 当前时间 - 交易广播时间 &gt; 阈值 15分钟 3. 当前链gas已大幅上涨 <code>当前链中档gasPrice &gt; 本交易gasPrice * 1.3</code> 上涨30%以上 4. 未超过最大加速次数 同笔提币的RBF次数 &lt; 3次 最多加速3次，避免无限提gas亏手续费<br>
+触发RBF的操作逻辑：</p>
+<ol>
+<li>用 原Nonce ，gasPrice提高 20%以上 （不要只提10%，有些节点要求更高比例才会替换），其他参数（to/value/data）完全不变</li>
+<li>重新走钱包签名（MPC），不用重新过提币审核（因为参数没变，只是提gas）</li>
+<li>再次多节点广播，记录新txHash到提币订单表的<code>tx_hash_list</code> 字段</li>
+</ol>
+<h3 id="_18">场景2：充值场景（用户充钱进来，判断是不是RBF双花） 这是交易所防骗钱的核心：用户先转100USDT给充值地址，等我们入账后，再用同Nonce发一笔gas更高的交易给自己，直接把钱转走，我们就亏了 判断&amp;防护五步走：</h3>
+<ol>
+<li>收到交易先标记「待确认」，绝不0确认入账</li>
+<li>同地址同Nonce检测 ：扫块服务里，对每个充值地址维护<code>pending_nonce_map</code> ，如果收到 同一地址同一Nonce的第二笔不同txHash的交易 ，立即把第一笔标记为「RBF可疑」，暂停入账</li>
+<li>确认数硬门槛 ：小额充值≥12个确认（ETH主网），大额充值≥32个确认（最终性确认），期间一旦发现同Nonce替换交易，直接作废原充值</li>
+<li>链上最终性校验 ：入账前再调一次<code>eth_getBlockReceipts(blockNumber)</code> ，确认该交易所在的blockHash没有被回滚（防止重组）</li>
+<li>大额充值叠加第三方风控 ：用Blocknative/慢雾的API直接查交易的<code>replaceable</code> 字段，是可替换交易就拉长确认时间</li>
+</ol>
+<h2 id="_20">四、你现有项目的代码改造点（不用大动，基于已有结构扩展）</h2>
+<h3 id="_21">1. 提币模块（exchange/wallet模块）</h3>
+<ul>
+<li>Nonce管理 ：把你项目里已有的「Redis锁+DB唯一索引」抽成<code>WalletNonceService</code> ，新增<code>allocateNonce(chain, address)</code> 和<code>calibrateNonce(chain, address)</code> 两个方法</li>
+<li>提币订单表扩展 ：加字段<code>tx_hash_list</code> （JSON数组，存所有RBF的txHash）、<code>accelerate_count</code> （加速次数）、<code>last_accelerate_time</code></li>
+<li>RBF定时任务 ：新增<code>WithdrawAccelerateTask</code> ，每5分钟扫一次<code>pending</code> 状态且超时的提币订单，按上面的四个条件判断是否触发RBF</li>
+</ul>
+<h3 id="_23">2. 充值模块（market/wallet模块的扫块服务）</h3>
+<ul>
+<li>
+<p>在<code>BlockScanner</code> 的交易处理逻辑里，新增<code>RbfDetectionService</code> ：<br>
+Java</p>
+<p>`// 伪代码：充值交易RBF检测<br>
+public void processRechargeTx(Transaction tx) {<br>
+String rechargeAddress = tx.getTo();<br>
+BigInteger nonce = tx.getNonce();<br>
+String key = "recharge:nounce:" + rechargeAddress + ":" + nonce;</p>
+<pre><code style="max-height: 1356px;" class="hljs">// 同地址同Nonce已有其他交易，标记可疑
+if (redisTemplate.hasKey(key) &amp;&amp; !redisTemplate.opsForValue().get(key).equals(tx.getHash())) {
+    rechargeOrderService.markSuspicious(tx.getHash());
+    log.warn("检测到RBF替换交易: address={}, nonce={}, oldTx={}, newTx={}",
+            rechargeAddress, nonce, redisTemplate.opsForValue().get(key), tx.getHash());
+    return;
+}
+
+redisTemplate.opsForValue().set(key, tx.getHash(), 24, TimeUnit.HOURS);
+// 走正常充值待确认流程
+</code><span style="position: absolute">​</span></pre>
+<p>}`</p>
+</li>
+</ul>
+<h2 id="_25">五、面试话术总结（直接背） 面试官问「大量提币时热钱包Nonce怎么防卡？RBF怎么判断？」的时候，直接按这个逻辑说：</h2>
+<h3 id="_26">30秒短版本：</h3>
+<p>"我们从 分散压力-降低卡壳-提前发现-兜底解卡 四层做的：架构上多热钱包分片，Nonce用Redis锁+DB唯一索引的中心化服务分配，发送时动态算Gas多节点广播，超时没进块优先用RBF同Nonce提20%Gas替换，不行就用CPFP子交易带打包，充值场景下监控同地址同Nonce的替换交易，等足够确认数再入账，防止用户RBF双花。"</p>
+<h3 id="_28">2分钟详细版本（资深/架构师岗用）：</h3>
+<p>"首先Nonce卡住的根因是EVM链要求同一地址交易Nonce必须连续，一笔卡了后面全堵。我们的方案是：</p>
+<ol>
+<li>架构层做 50个以上的热钱包分片池 ，按用户ID哈希分配，单个地址卡了不影响全局；Nonce单独做中心化分配服务，加Redis分布式锁+DB唯一索引，每次分配前查链上pending状态的Nonce，防止重复；</li>
+<li>发送层动态算Gas，EIP-1559交易的maxPriorityFee比中档高20%，发之前先estimateGas校验无效交易，同时广播给自有节点+Infura+矿池三个渠道；</li>
+<li>每笔交易都有10秒间隔的轮询任务，pending超过15分钟或者链上Gas涨了30%就触发RBF：同Nonce提20%Gas重发，最多加速3次；</li>
+<li>RBF不行就用CPFP，用卡壳Nonce+1发一笔高Gas自转账，矿池为了赚子交易手续费会打包父交易；极端情况有管理员后台一键从链上校准Nonce。<br>
+充值场景的RBF防双花：收到交易先存pending，监控同地址同Nonce有没有第二笔交易，小额12确认大额32确认再入账，保证不会被用户替换走。"<br>
+如果需要，我可以直接给你写**<code>WalletNonceService</code> 的Java实现代码 和 提币RBF加速的定时任务代码**，带中文注释，直接嵌进你现在的项目里就能用。</li>
+</ol>
+</article>
+</body>
+</html>

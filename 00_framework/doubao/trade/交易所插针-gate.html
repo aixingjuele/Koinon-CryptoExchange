@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-scheme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Arya Markdown Editor">
+  <title>未命名文档</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <style>
+:root {
+  --c-cta-active: #0c0a09;
+  --c-sidebar-text: #57534e;
+  --c-cta-hover: #2e2a26;
+  --c-cta: #1c1917;
+  --c-text-a06: rgba(28,25,23,0.06);
+  --c-border-hair: rgba(28,25,23,0.07);
+  --c-text-3: #8a847c;
+  --c-shadow-pill: 0 1px 2px rgba(28,25,23,0.05),0 6px 16px fade(#1c1917,4%);
+  --c-text-a92: rgba(28,25,23,0.92);
+  --c-sidebar-hover: rgba(28,25,23,0.04);
+  --c-border-grey: rgba(28,25,23,0.1);
+  --c-deep: #1c1917;
+  --c-text-a08: rgba(28,25,23,0.08);
+  --c-preview-bg: #f6f2eb;
+  --c-text-a22: rgba(28,25,23,0.22);
+  --c-white: #fffcf7;
+  --c-text-2: #57534e;
+  --c-text-a04: rgba(28,25,23,0.04);
+  --c-text-a12: rgba(28,25,23,0.12);
+  --c-highlight: #f5e14a;
+  --c-text-a05: rgba(28,25,23,0.05);
+  --c-input: #efebe3;
+  --c-icon-primary: #44403c;
+  --c-shadow-lg: 0 16px 48px rgba(28,25,23,0.1),0 4px 12px fade(#1c1917,4%);
+  --c-text-a03: rgba(28,25,23,0.03);
+  --c-black: #1c1917;
+  --c-nav: rgba(255,252,247,0.84);
+  --c-yellow: #f5e14a;
+  --c-paper: #fffcf7;
+  --c-brand: #1c1917;
+  --c-grey: #efebe3;
+  --c-brand-hover: #2e2a26;
+  --c-orange: #c48a3a;
+  --c-shadow-xs: 0 1px 2px rgba(28,25,23,0.04);
+  --c-border-black: #d6d1c7;
+  --c-red: #c23b2e;
+  --c-brand-soft-strong: rgba(28,25,23,0.1);
+  --c-text-grey: #57534e;
+  --c-focus-ring-color: rgba(28,25,23,0.22);
+  --c-page-a72: rgba(247,244,238,0.72);
+  --c-cta-fg: #fffcf7;
+  --c-red-hover: #cf4335;
+  --c-glass-strong: rgba(255,252,247,0.9);
+  --c-scrim: rgba(28,25,23,0.38);
+  --c-overlay: rgba(28,25,23,0.18);
+  --c-glass: rgba(247,244,238,0.78);
+  --c-text-a35: rgba(28,25,23,0.35);
+  --c-grey-fill: #efebe3;
+  --c-highlight-soft: rgba(245,225,74,0.5);
+  --c-separator: rgba(28,25,23,0.06);
+  --c-sidebar-text-active: #1c1917;
+  --c-light-black: #44403c;
+  --c-red-active: #b2362a;
+  --c-text: #1c1917;
+  --c-red-soft: rgba(194,59,46,0.12);
+  --c-sidebar-border: rgba(28,25,23,0.07);
+  --c-brand-soft: rgba(28,25,23,0.06);
+  --c-elevated: #fffcf7;
+  --c-paper-side: #f1ede5;
+  --c-scrollbar-hover: rgba(28,25,23,0.22);
+  --c-icon: #8a847c;
+  --c-text-a18: rgba(28,25,23,0.18);
+  --c-page-glow: radial-gradient(ellipse 90% 55% at 50% -18%,rgba(245,220,170,0.42),transparent 62%),radial-gradient(ellipse 45% 36% at 100% 0%,rgba(255,236,214,0.3),transparent 55%);
+  --c-shadow-sm: 0 1px 2px rgba(28,25,23,0.04),0 8px 24px fade(#1c1917,4.5%);
+  --c-paper-a96: rgba(255,252,247,0.96);
+  --c-brand-active: #0c0a09;
+  --c-scrollbar: rgba(28,25,23,0.12);
+  --c-green: #5a8f6b;
+  --c-sidebar-active: #fffcf7;
+  --c-page: #f7f4ee;
+  --c-sidebar-bg: #f1ede5;
+  --c-shadow-md: 0 8px 28px rgba(28,25,23,0.08),0 2px 6px fade(#1c1917,4%);
+  --c-shadow-focus: 0 0 0 3px rgba(28,25,23,0.08);
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--c-page, #f7f4ee);
+  color: var(--c-text, #1c1917);
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+article.vditor-reset {
+  box-sizing: border-box;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+  font-size: 17px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+article.vditor-reset img,
+article.vditor-reset svg,
+article.vditor-reset video {
+  max-width: 100%;
+  height: auto;
+}
+article.vditor-reset img {
+  display: block;
+}
+article.vditor-reset [data-processed] {
+  max-width: 100%;
+  overflow: auto;
+}
+article.vditor-reset h1 {
+  text-align: center;
+}
+article.vditor-reset a {
+  color: inherit;
+}
+article.vditor-reset pre {
+  overflow: auto;
+  padding: 1em;
+  border-radius: 8px;
+  background: var(--c-grey, #f3f1ec);
+  color: var(--c-text, #1c1917);
+}
+article.vditor-reset code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+}
+article.vditor-reset table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+}
+article.vditor-reset th,
+article.vditor-reset td {
+  border: 1px solid var(--c-border-grey, #e7e3db);
+  padding: 8px 12px;
+}
+article.vditor-reset blockquote {
+  margin: 1em 0;
+  padding: 0 1em;
+  color: var(--c-text-2, #57534e);
+  border-left: 3px solid var(--c-separator, #e7e3db);
+}
+article.vditor-reset hr {
+  border: 0;
+  height: 1px;
+  background: var(--c-separator, #e7e3db);
+}
+article.vditor-reset input[type='checkbox'] {
+  margin-right: 0.4em;
+}
+@media print {
+  html, body { background: #fff; }
+  article.vditor-reset { max-width: none; padding: 0; }
+}
+.hljs-comment, .hljs-quote { color: #6a737d; }
+.hljs-keyword, .hljs-selector-tag, .hljs-deletion { color: #d73a49; }
+.hljs-string, .hljs-attr, .hljs-addition { color: #032f62; }
+.hljs-number, .hljs-literal, .hljs-variable { color: #005cc5; }
+.hljs-title, .hljs-section { color: #6f42c1; }
+.hljs-built_in, .hljs-type { color: #e36209; }
+.vditor-preview > .vditor-reset { padding: 10px; margin: 0px auto; }
+.vditor-reset { color: rgb(36, 41, 46); font-variant-ligatures: no-common-ligatures; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", "Hiragino Sans GB", "Microsoft Yahei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; overflow-wrap: break-word; overflow: auto; line-height: 1.5; font-size: 16px; word-break: break-word; }
+.vditor-reset--anchor { padding-left: 20px; }
+.vditor-reset--error { color: rgb(210, 63, 49); font-size: 12px; display: block; line-height: 16px; }
+.vditor-reset ul ul ul { list-style-type: square; }
+.vditor-reset ul ul { list-style-type: circle; }
+.vditor-reset ul { list-style-type: disc; }
+.vditor-reset ol, .vditor-reset ul { padding-left: 2em; margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset li + li { margin-top: 0.25em; }
+.vditor-reset li p { margin-top: 16px; }
+.vditor-reset audio { max-width: 100%; }
+.vditor-reset audio:focus { outline: none; }
+.vditor-reset video { max-height: 90vh; max-width: 100%; }
+.vditor-reset img { max-width: 100%; }
+.vditor-reset img.emoji { cursor: auto; max-width: 20px; vertical-align: sub; }
+.vditor-reset h1, .vditor-reset h2, .vditor-reset h3, .vditor-reset h4, .vditor-reset h5, .vditor-reset h6 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
+.vditor-reset h1:hover .vditor-anchor svg, .vditor-reset h2:hover .vditor-anchor svg, .vditor-reset h3:hover .vditor-anchor svg, .vditor-reset h4:hover .vditor-anchor svg, .vditor-reset h5:hover .vditor-anchor svg, .vditor-reset h6:hover .vditor-anchor svg { visibility: visible; }
+.vditor-reset h1 { font-size: 1.75em; }
+.vditor-reset h2 { font-size: 1.55em; }
+.vditor-reset h3 { font-size: 1.38em; }
+.vditor-reset h4 { font-size: 1.25em; }
+.vditor-reset h5 { font-size: 1.13em; }
+.vditor-reset h6 { font-size: 1em; }
+.vditor-reset hr { height: 2px; padding: 0px; margin: 24px 0px; background-color: rgb(234, 236, 239); border: 0px; }
+.vditor-reset p { margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset blockquote { padding: 0px 1em; color: rgb(106, 115, 125); border-left: 0.25em solid rgb(234, 236, 239); margin: 0px 0px 16px; }
+.vditor-reset blockquote > :first-child { margin-top: 0px; }
+.vditor-reset blockquote > :last-child { margin-bottom: 0px; }
+.vditor-reset ins > iframe { border: 0px; }
+.vditor-reset iframe { border: 1px solid rgb(209, 213, 218); max-width: 100%; box-sizing: border-box; }
+.vditor-reset iframe.iframe__video { min-width: 80%; min-height: 36vh; }
+.vditor-reset table { border-collapse: collapse; empty-cells: show; margin-bottom: 16px; overflow: auto; border-spacing: 0px; display: block; word-break: keep-all; width: 100%; }
+.vditor-reset table tr { background-color: rgb(250, 251, 252); border-top: 1px solid rgb(198, 203, 209); }
+.vditor-reset table td, .vditor-reset table th { padding: 6px 13px; border: 1px solid rgb(223, 226, 229); word-break: normal; white-space: nowrap; }
+.vditor-reset table td:first-child::after, .vditor-reset table th:first-child::after { content: ""; display: inline-block; vertical-align: top; min-height: 24px; }
+.vditor-reset table th { font-weight: 600; }
+.vditor-reset table tbody tr:nth-child(2n) { background-color: rgb(255, 255, 255); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { padding: 0.2em 0.4em; margin: 0px; font-size: 85%; border-radius: 3px; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; word-break: break-word; background-size: 20px 20px; white-space: pre-wrap; }
+.vditor-reset pre { margin: 1em 0px; }
+.vditor-reset pre > code { margin: 0px; font-size: 85%; padding: 0.5em; border-radius: 5px; display: block; overflow: auto; white-space: pre; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; background-size: 20px 20px; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AgMAAABHkjHhAAAACVBMVEWAgIBaWlo+Pj7rTFvWAAAAA3RSTlMHCAw+VhR4AAAA+klEQVQoz4WSMW7EQAhFPxKWNh2FCx+HkaZI6RRb5DYbyVfIJXLKDCFoMbaTKSw/8ZnPAPjaH2xgZcUNUDADD7D9LtDBCLZ45fbkvo/30K8yeI64pPwl6znd/3n/Oe93P3ho9qeh72btTFzqkz0rsJle8Zr81OLEwZ1dv/713uWqvu2pl+k0fy7MWtj9r/tN5q/02z89qa/L4Dc2LvM93kezPfXlME/O86EbY/V9GB9ePX8G1/6W+/9h1dq/HGfTfzT3j/xNo7522Bfnqe5jO/fvhVthlfk434v3iO9zG/UOphyPeinPl1J8Gtaa7xPTa/Dk+RIs4deMvwGvcGsmsCvJ0AAAAABJRU5ErkJggg=="); word-break: normal; overflow-wrap: normal; }
+.vditor-reset pre:hover div.vditor-copy { display: block; }
+.vditor-reset .language-abc, .vditor-reset .language-echarts, .vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-math, .vditor-reset .language-mermaid, .vditor-reset .language-mindmap, .vditor-reset .language-plantuml, .vditor-reset .language-smiles { margin-bottom: 16px; }
+.vditor-reset .language-math mjx-container:focus { outline: none; cursor: context-menu; }
+.vditor-reset .language-math .katex-display > .katex > .katex-html > .tag { display: inline-block; font-size: 1.21rem; right: 2px; }
+.vditor-reset .language-echarts, .vditor-reset .language-mindmap { overflow: hidden; height: 420px; }
+.vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-mermaid { text-align: center; }
+.vditor-reset .language-graphviz parsererror { overflow: auto; }
+.vditor-reset kbd { display: inline-block; padding: 3px 5px; font: 11px / 10px Consolas, "Liberation Mono", Menlo, Courier, monospace; color: rgb(36, 41, 46); vertical-align: middle; background-color: rgb(250, 251, 252); border: 1px solid rgb(209, 213, 218); border-radius: 3px; box-shadow: rgb(209, 213, 218) 0px -1px 0px inset; }
+.vditor-reset summary { cursor: pointer; }
+.vditor-reset summary:focus { outline: none; }
+.vditor-reset svg { height: auto; width: auto; stroke-width: initial; }
+.vditor-reset blockquote:last-child, .vditor-reset hr:last-child, .vditor-reset ol:last-child, .vditor-reset p:last-child, .vditor-reset pre:last-child, .vditor-reset ul:last-child { margin-bottom: 0px; }
+.vditor-wysiwyg, .vditor-wysiwyg pre.vditor-reset { box-sizing: border-box; }
+.vditor-wysiwyg pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; }
+.vditor-wysiwyg pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-wysiwyg pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-wysiwyg pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-wysiwyg pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-wysiwyg .vditor-toc::before, .vditor-wysiwyg > .vditor-reset > h1::before, .vditor-wysiwyg > .vditor-reset > h2::before, .vditor-wysiwyg > .vditor-reset > h3::before, .vditor-wysiwyg > .vditor-reset > h4::before, .vditor-wysiwyg > .vditor-reset > h5::before, .vditor-wysiwyg > .vditor-reset > h6::before, .vditor-wysiwyg div.vditor-wysiwyg__block::before, .vditor-wysiwyg div[data-type="footnotes-block"]::before, .vditor-wysiwyg div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-wysiwyg > .vditor-reset > h2::before { content: "H2"; }
+.vditor-wysiwyg > .vditor-reset > h3::before { content: "H3"; }
+.vditor-wysiwyg > .vditor-reset > h4::before { content: "H4"; }
+.vditor-wysiwyg > .vditor-reset > h5::before { content: "H5"; }
+.vditor-wysiwyg > .vditor-reset > h6::before { content: "H6"; }
+.vditor-ir pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; box-sizing: border-box; }
+.vditor-ir pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-ir pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-ir pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-ir pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-ir pre.vditor-reset pre { margin: 0px; }
+.vditor-ir .vditor-reset > h1::before, .vditor-ir .vditor-reset > h2::before, .vditor-ir .vditor-reset > h3::before, .vditor-ir .vditor-reset > h4::before, .vditor-ir .vditor-reset > h5::before, .vditor-ir .vditor-reset > h6::before, .vditor-ir .vditor-toc::before, .vditor-ir div[data-type="footnotes-block"]::before, .vditor-ir div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-ir .vditor-reset > h2::before { content: "H2"; }
+.vditor-ir .vditor-reset > h3::before { content: "H3"; }
+.vditor-ir .vditor-reset > h4::before { content: "H4"; }
+.vditor-ir .vditor-reset > h5::before { content: "H5"; }
+.vditor-ir .vditor-reset > h6::before { content: "H6"; }
+.export-page .vditor-reset h1 { text-align: center; }
+.vditor-reset { color: var(--c-text) !important; }
+.vditor-reset h1, .vditor-reset h2 { border-bottom-color: var(--c-separator) !important; }
+.vditor-reset hr { background-color: var(--c-separator) !important; }
+.vditor-reset blockquote { color: var(--c-text-2) !important; border-left-color: var(--c-separator) !important; }
+.vditor-reset table, .vditor-reset table td, .vditor-reset table th { border-color: var(--c-border-grey) !important; }
+.vditor-reset table th, .vditor-reset table tr:nth-child(2n) { background-color: var(--c-grey) !important; }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { border-color: var(--c-border-hair); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma), .vditor-reset kbd, .vditor-reset pre, .vditor-reset pre > code { background-color: var(--c-grey) !important; color: var(--c-text) !important; }
+.vditor-reset kbd { border-color: var(--c-border-grey) !important; box-shadow: inset 0 -1px 0 var(--c-border-grey) !important; }
+.vditor-reset a { color: var(--c-text) !important; }
+.vditor-preview > .vditor-reset { padding: 10px; margin: 0px auto; }
+.vditor-reset { color: rgb(36, 41, 46); font-variant-ligatures: no-common-ligatures; font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", "Hiragino Sans GB", "Microsoft Yahei", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; overflow-wrap: break-word; overflow: auto; line-height: 1.5; font-size: 16px; word-break: break-word; }
+.vditor-reset--anchor { padding-left: 20px; }
+.vditor-reset--error { color: rgb(210, 63, 49); font-size: 12px; display: block; line-height: 16px; }
+.vditor-reset ul ul ul { list-style-type: square; }
+.vditor-reset ul ul { list-style-type: circle; }
+.vditor-reset ul { list-style-type: disc; }
+.vditor-reset ol, .vditor-reset ul { padding-left: 2em; margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset li + li { margin-top: 0.25em; }
+.vditor-reset li p { margin-top: 16px; }
+.vditor-reset audio { max-width: 100%; }
+.vditor-reset audio:focus { outline: none; }
+.vditor-reset video { max-height: 90vh; max-width: 100%; }
+.vditor-reset img { max-width: 100%; }
+.vditor-reset img.emoji { cursor: auto; max-width: 20px; vertical-align: sub; }
+.vditor-reset h1, .vditor-reset h2, .vditor-reset h3, .vditor-reset h4, .vditor-reset h5, .vditor-reset h6 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; }
+.vditor-reset h1:hover .vditor-anchor svg, .vditor-reset h2:hover .vditor-anchor svg, .vditor-reset h3:hover .vditor-anchor svg, .vditor-reset h4:hover .vditor-anchor svg, .vditor-reset h5:hover .vditor-anchor svg, .vditor-reset h6:hover .vditor-anchor svg { visibility: visible; }
+.vditor-reset h1 { font-size: 1.75em; }
+.vditor-reset h2 { font-size: 1.55em; }
+.vditor-reset h3 { font-size: 1.38em; }
+.vditor-reset h4 { font-size: 1.25em; }
+.vditor-reset h5 { font-size: 1.13em; }
+.vditor-reset h6 { font-size: 1em; }
+.vditor-reset hr { height: 2px; padding: 0px; margin: 24px 0px; background-color: rgb(234, 236, 239); border: 0px; }
+.vditor-reset p { margin-top: 0px; margin-bottom: 16px; }
+.vditor-reset blockquote { padding: 0px 1em; color: rgb(106, 115, 125); border-left: 0.25em solid rgb(234, 236, 239); margin: 0px 0px 16px; }
+.vditor-reset blockquote > :first-child { margin-top: 0px; }
+.vditor-reset blockquote > :last-child { margin-bottom: 0px; }
+.vditor-reset ins > iframe { border: 0px; }
+.vditor-reset iframe { border: 1px solid rgb(209, 213, 218); max-width: 100%; box-sizing: border-box; }
+.vditor-reset iframe.iframe__video { min-width: 80%; min-height: 36vh; }
+.vditor-reset table { border-collapse: collapse; empty-cells: show; margin-bottom: 16px; overflow: auto; border-spacing: 0px; display: block; word-break: keep-all; width: 100%; }
+.vditor-reset table tr { background-color: rgb(250, 251, 252); border-top: 1px solid rgb(198, 203, 209); }
+.vditor-reset table td, .vditor-reset table th { padding: 6px 13px; border: 1px solid rgb(223, 226, 229); word-break: normal; white-space: nowrap; }
+.vditor-reset table td:first-child::after, .vditor-reset table th:first-child::after { content: ""; display: inline-block; vertical-align: top; min-height: 24px; }
+.vditor-reset table th { font-weight: 600; }
+.vditor-reset table tbody tr:nth-child(2n) { background-color: rgb(255, 255, 255); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { padding: 0.2em 0.4em; margin: 0px; font-size: 85%; border-radius: 3px; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; word-break: break-word; background-size: 20px 20px; white-space: pre-wrap; }
+.vditor-reset pre { margin: 1em 0px; }
+.vditor-reset pre > code { margin: 0px; font-size: 85%; padding: 0.5em; border-radius: 5px; display: block; overflow: auto; white-space: pre; font-family: mononoki, Consolas, "Liberation Mono", Menlo, Courier, monospace, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", EmojiSymbols; background-size: 20px 20px; background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8AgMAAABHkjHhAAAACVBMVEWAgIBaWlo+Pj7rTFvWAAAAA3RSTlMHCAw+VhR4AAAA+klEQVQoz4WSMW7EQAhFPxKWNh2FCx+HkaZI6RRb5DYbyVfIJXLKDCFoMbaTKSw/8ZnPAPjaH2xgZcUNUDADD7D9LtDBCLZ45fbkvo/30K8yeI64pPwl6znd/3n/Oe93P3ho9qeh72btTFzqkz0rsJle8Zr81OLEwZ1dv/713uWqvu2pl+k0fy7MWtj9r/tN5q/02z89qa/L4Dc2LvM93kezPfXlME/O86EbY/V9GB9ePX8G1/6W+/9h1dq/HGfTfzT3j/xNo7522Bfnqe5jO/fvhVthlfk434v3iO9zG/UOphyPeinPl1J8Gtaa7xPTa/Dk+RIs4deMvwGvcGsmsCvJ0AAAAABJRU5ErkJggg=="); word-break: normal; overflow-wrap: normal; }
+.vditor-reset pre:hover div.vditor-copy { display: block; }
+.vditor-reset .language-abc, .vditor-reset .language-echarts, .vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-math, .vditor-reset .language-mermaid, .vditor-reset .language-mindmap, .vditor-reset .language-plantuml, .vditor-reset .language-smiles { margin-bottom: 16px; }
+.vditor-reset .language-math mjx-container:focus { outline: none; cursor: context-menu; }
+.vditor-reset .language-math .katex-display > .katex > .katex-html > .tag { display: inline-block; font-size: 1.21rem; right: 2px; }
+.vditor-reset .language-echarts, .vditor-reset .language-mindmap { overflow: hidden; height: 420px; }
+.vditor-reset .language-flowchart, .vditor-reset .language-graphviz, .vditor-reset .language-markmap, .vditor-reset .language-mermaid { text-align: center; }
+.vditor-reset .language-graphviz parsererror { overflow: auto; }
+.vditor-reset kbd { display: inline-block; padding: 3px 5px; font: 11px / 10px Consolas, "Liberation Mono", Menlo, Courier, monospace; color: rgb(36, 41, 46); vertical-align: middle; background-color: rgb(250, 251, 252); border: 1px solid rgb(209, 213, 218); border-radius: 3px; box-shadow: rgb(209, 213, 218) 0px -1px 0px inset; }
+.vditor-reset summary { cursor: pointer; }
+.vditor-reset summary:focus { outline: none; }
+.vditor-reset svg { height: auto; width: auto; stroke-width: initial; }
+.vditor-reset blockquote:last-child, .vditor-reset hr:last-child, .vditor-reset ol:last-child, .vditor-reset p:last-child, .vditor-reset pre:last-child, .vditor-reset ul:last-child { margin-bottom: 0px; }
+.vditor-wysiwyg, .vditor-wysiwyg pre.vditor-reset { box-sizing: border-box; }
+.vditor-wysiwyg pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; }
+.vditor-wysiwyg pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-wysiwyg pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-wysiwyg pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-wysiwyg pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-wysiwyg .vditor-toc::before, .vditor-wysiwyg > .vditor-reset > h1::before, .vditor-wysiwyg > .vditor-reset > h2::before, .vditor-wysiwyg > .vditor-reset > h3::before, .vditor-wysiwyg > .vditor-reset > h4::before, .vditor-wysiwyg > .vditor-reset > h5::before, .vditor-wysiwyg > .vditor-reset > h6::before, .vditor-wysiwyg div.vditor-wysiwyg__block::before, .vditor-wysiwyg div[data-type="footnotes-block"]::before, .vditor-wysiwyg div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-wysiwyg > .vditor-reset > h2::before { content: "H2"; }
+.vditor-wysiwyg > .vditor-reset > h3::before { content: "H3"; }
+.vditor-wysiwyg > .vditor-reset > h4::before { content: "H4"; }
+.vditor-wysiwyg > .vditor-reset > h5::before { content: "H5"; }
+.vditor-wysiwyg > .vditor-reset > h6::before { content: "H6"; }
+.vditor-ir pre.vditor-reset { background-color: var(--panel-background-color); margin: 0px; white-space: pre-wrap; height: 100%; box-sizing: border-box; }
+.vditor-ir pre.vditor-reset[contenteditable="false"] { opacity: 0.3; cursor: not-allowed; }
+.vditor-ir pre.vditor-reset:empty::before { content: attr(placeholder); color: var(--second-color); }
+.vditor-ir pre.vditor-reset:focus { outline: none; background-color: var(--textarea-background-color); }
+.vditor-ir pre.vditor-reset::after { content: ""; height: var(--editor-bottom); display: block; }
+.vditor-ir pre.vditor-reset pre { margin: 0px; }
+.vditor-ir .vditor-reset > h1::before, .vditor-ir .vditor-reset > h2::before, .vditor-ir .vditor-reset > h3::before, .vditor-ir .vditor-reset > h4::before, .vditor-ir .vditor-reset > h5::before, .vditor-ir .vditor-reset > h6::before, .vditor-ir .vditor-toc::before, .vditor-ir div[data-type="footnotes-block"]::before, .vditor-ir div[data-type="link-ref-defs-block"]::before { float: left; padding-right: 4px; margin-left: -29px; content: "H1"; font-size: 0.85rem; font-weight: 400; color: var(--second-color); }
+.vditor-ir .vditor-reset > h2::before { content: "H2"; }
+.vditor-ir .vditor-reset > h3::before { content: "H3"; }
+.vditor-ir .vditor-reset > h4::before { content: "H4"; }
+.vditor-ir .vditor-reset > h5::before { content: "H5"; }
+.vditor-ir .vditor-reset > h6::before { content: "H6"; }
+.export-page .vditor-reset h1 { text-align: center; }
+.vditor-reset { color: var(--c-text) !important; }
+.vditor-reset h1, .vditor-reset h2 { border-bottom-color: var(--c-separator) !important; }
+.vditor-reset hr { background-color: var(--c-separator) !important; }
+.vditor-reset blockquote { color: var(--c-text-2) !important; border-left-color: var(--c-separator) !important; }
+.vditor-reset table, .vditor-reset table td, .vditor-reset table th { border-color: var(--c-border-grey) !important; }
+.vditor-reset table th, .vditor-reset table tr:nth-child(2n) { background-color: var(--c-grey) !important; }
+.vditor-reset code:not(.hljs):not(.highlight-chroma) { border-color: var(--c-border-hair); }
+.vditor-reset code:not(.hljs):not(.highlight-chroma), .vditor-reset kbd, .vditor-reset pre, .vditor-reset pre > code { background-color: var(--c-grey) !important; color: var(--c-text) !important; }
+.vditor-reset kbd { border-color: var(--c-border-grey) !important; box-shadow: inset 0 -1px 0 var(--c-border-grey) !important; }
+.vditor-reset a { color: var(--c-text) !important; }
+.preview-vditor #khaleesi .vditor-preview .vditor-reset h1 { text-align: center; }
+@media (max-width: 768px) {
+.preview-vditor .vditor-reset table { display: inline-block; overflow-x: auto; }
+}
+  </style>
+</head>
+<body>
+  <article class="vditor-reset"><p>这个问题非常经典，面试官考察的不是“加个涨跌停”这么简单，而是 你对“撮合 + 行情 + 风控 + 清算”四层联动 是否有全局认知。我先给你一个 面试 30 秒定调版 ，再拆解 OKX / 币安的行业标准做法，最后对照你们<code>CoinExchange</code> 项目代码指出哪里最容易被插针、怎么改。</p>
+<h2 id="_1">🔑 面试 30 秒定调版（先讲给面试官听） “插针本质是 盘口深度被瞬间击穿 + 行情/风控口径没做保护 ，导致一个大单把价格打到极价又迅速回拉。头部交易所（OKX/币安）不是单点解决，而是四层防线：</h2>
+<ol>
+<li>撮合层 给市价/限价单加滑点和价格带硬边界；</li>
+<li>行情层 把『标记价格』和『最新成交价』分离，K 线和强平不用 LastPrice；</li>
+<li>风控层 做异常成交熔断、回滚/冻结，自成交和刷量拦截；</li>
+<li>运营层 做市商补深度 + 大单引导 OTC，避免深度真空。<br>
+最核心一条是： 绝对不能用『最近一笔成交价』来算标记价格、强平和资金费率 ，这一下就能消灭 80% 的插针破坏力。”</li>
+</ol>
+<h2 id="_3">一、先定义：什么叫“插针”？（别和正常波动混为一谈）</h2>
+<p>面试先把边界说清楚，避免被追问“正常涨跌算不算插针”：</p>
+<ul>
+<li>三要素缺一不可：
+<ol>
+<li>时间极短 ：ms 级 ~ 几秒，且成交后价格迅速回落到正常区间；</li>
+<li>偏离极大 ：相对指数/标记价偏离 5%~30%（依品种档位）；</li>
+<li>显失公平 ：因为盘口深度真空、自成交或订单异常导致，而非真实供需。<br>
+典型例子 ：BTC 盘口卖 1~5 档合计只有 0.5 BTC，一个 10 BTC 市价买单一下从 6 万吃到 9 万，再被套利单瞬间砸回 6 万——那笔 9 万就是插针。</li>
+</ol>
+</li>
+</ul>
+<h2 id="_6">二、OKX / 币安：行业 4 层防插针体系（按落地顺序）</h2>
+<h3 id="_7">第 1 层：撮合引擎层——在“成交发生前”拦掉 90% 的插针</h3>
+<p>这是最根本的一层， 拦成交 &gt; 拦行情 &gt; 拦用户 。</p>
+<p>机制 OKX / 币安做法 你面试要讲的实现细节 ① 市价单滑点上限（Price Protection） 市价单不会真的“无穷价格吃下去”，而是按 当前最优买卖价的 ±X% 硬边界 吃单。 比如 BTC 卖一是 60000，滑点保护设 3%，市价买单最多只能吃到 ≤ 61800 的档位；超出部分 自动转限价单挂在边界价上 ，剩余未成交部分留在盘口等待， 不会继续击穿深度 。 ② 单订单最大可消耗档数 / 金额 单次撮合循环最多吃 N 档（如 20 档），或单次撮合成交金额不超过该币种“典型深度”的倍数（如 200 万 USDT）。 避免一个大单把盘口 100 档一口气吃空。你们项目代码里<code>while</code> 吃盘只要成交就一直吃（我下面会指出来），这就是最容易被插针的点。 ③ 基于标记价/指数价的硬价格带（Price Band） 任何订单价格如果偏离 指数价 ±M% （现货 20%、合约 5%<del>10%），直接 reject。 标记价怎么算？不用 LastPrice，一般用：<br>
+（买1价+卖1价+中价）/3 或 深度加权中价 ，再结合 3</del>5 家现货指数做加权。 这是整个防插针的灵魂 。 ④ 自成交拦截（Self-Trade Prevention） 同一 UID、同一主账户、同一资金组、同一 IP/设备指纹 的相互挂单，要么 cancel maker，要么 cancel taker，绝不成交。 插针很多是“自买自卖刷假价格”，这条能打掉 90% 的人为插针。OKX 是可选模式（Cancel Maker / Cancel Taker / Cancel Both），币安默认 Cancel Maker。 ⑤ 撮合“熔断窗口” 单品在 100ms 内价格跳动超过阈值，撮合队列暂挂 10~50ms，让做市商和套利单补深度再继续。 不是涨跌停，是“微熔断”，防止机器单瞬间把深度打穿。</p>
+<h3 id="_10">第 2 层：行情与标记价格层——就算插了，也不让它“伤到业务”</h3>
+<p>哪怕真出现极端成交，也不让这笔成交主导系统风控、K 线、强平。</p>
+<p>机制 行业做法 面试重点 ① 标记价格 ≠ 最新成交价 合约强平、资金费率、风控指标 ，全部用 标记价格（Mark Price） ，不用 LastPrice。 这一条是插针不爆仓的关键。OKX 标的指数 = 6 家交易所现货价格成交量加权；标记价 = (<code>max(买一, 指数) + min(卖一, 指数)</code> / 2 或类似中价口径)，具体是公开可审计公式。 ② K 线异常值清洗 单根 K 线最高/最低价如果偏离标记价超过阈值，且持续时间&lt;阈值且成交量&lt;阈值， 做“毛刺抹除” ，用上下一档或成交量加权价替代。 币安/OKX 主站的分钟 K 基本看不到 1 秒的夸张针，就是做了清洗；深度行情接口（depth@100ms）一般不清洗，给量化自己过滤。 ③ 成交量加权推送 给 C 端推送的盘口和成交摘要，用最近 100ms 内**成交量加权平均价（VWAP）**替代最后一笔成交价做“24h 涨跌”展示。 否则一笔 5 USDT 的异常成交就能把涨跌拉满，误导用户。 ④ 多源指数去极值 指数计算时把样本里偏离均值 ±3σ 的源先剔除再求加权。 CoinGecko / CoinMarketCap 就是这个思路。</p>
+<h3 id="_13">第 3 层：风控 + 清算层——万一成交了，还能兜底</h3>
+<p>机制 行业做法 ① 异常成交“挂起 pending” 单笔成交偏离标记价 &gt;阈值， 不立刻做资金清算、不扣手续费、不进钱包 ，先进异常队列由风控人工+规则双审 30 秒窗口。 ② 显失公平成交回滚 行业公开做法：OKX、币安对“极端且短暂”的插针会 公告回滚成交 （或补偿差额），避免大户用插针爆合约用户。 ③ 资金费率 / 强平价窗口平滑 资金费率按 8 小时均值计算，强平价阶梯化，避免瞬时 LastPrice 触发一串爆仓单（爆仓单反过来继续砸盘就是踩踏放大器）。 ④ 强平拆分 + 保险基金 / ADL 强平单拆小挂限价、走“保护价”吃盘；不够就用保险基金兜底；再不够触发自动减仓（ADL），把对手盈利仓位按排名减仓分摊，而不是一路砸市价。</p>
+<h3 id="_15">第 4 层：运营与流动性层——从根上减少“深度真空”</h3>
+<ul>
+<li>做市商义务 ：指定做市商（MM）必须维持“买卖 N 档合计深度 ≥ 阈值”，否则扣返佣。OKX/币安对头部合约的盘口深度是有 SLA 的；</li>
+<li>大额引导 OTC / 大宗交易（Block Trade） ：单超过现货深度 30% 的订单，前端直接弹窗提醒走大宗，别在盘口砸市价；</li>
+<li>高风险期加保证金 / 降杠杆 ：极端行情下临时降最大杠杆、提维持保证金率，减少强平单规模；</li>
+<li>公告 + 费率调节 ：插针嫌疑时收“异常撤单/挂单费”，约束刷量机器人。</li>
+</ul>
+<h2 id="_17">三、对照你们 CoinExchange 项目代码：最容易被插针的 3 个点 + 怎么改</h2>
+<p>我不用读全文就知道几个典型问题（和你之前问过的“市价单是不是无限吃盘”完全对应）：</p>
+<h3 id="_19">风险点 1：市价单撮合是 while 吃盘，没有滑点上限 / 档数上限</h3>
+<p>典型代码形态 ：</p>
+<p>Java</p>
+<p>1<br>
+2<br>
+3<br>
+4</p>
+<p><code>while (limitOrder != null &amp;&amp; tradeAmount.compareTo(BigDecimal.ZERO) &gt; 0) { trade(limitOrder, marketOrder); // 能成交就一直成交 limitOrder = nextBestPriceOrder(); // 继续吃更深一档 }</code></p>
+<p>问题 ：只要深度稀疏，<code>while</code> 会一路吃到天价/地价。 面试改法 ：</p>
+<p>Java</p>
+<p>1<br>
+2<br>
+3<br>
+4<br>
+5<br>
+6<br>
+7<br>
+8<br>
+9<br>
+10<br>
+11<br>
+12<br>
+13</p>
+<p>`// 伪代码：加三道闸<br>
+BigDecimal protectPrice = currentBestBidOrAsk.multiply(1 + 0.03); // 滑点 3%<br>
+int maxLevels = 20;<br>
+BigDecimal maxValue = coinTypicalDeep.multiply(3); // 最多吃 3 倍典型深度</p>
+<p>while (levels &lt; maxLevels &amp;&amp; valueUsed &lt; maxValue<br>
+&amp;&amp; limitOrder.price.compareTo(protectPrice) &lt;= 0    // 价格带<br>
+&amp;&amp; tradeAmount &gt; 0) {<br>
+trade();<br>
+levels++;<br>
+valueUsed = valueUsed.add(filledValue);<br>
+}<br>
+// 剩下没成交的市价单：取消 or 转限价挂在 protectPrice`</p>
+<h3 id="_29">风险点 2：K 线 / 风控 / 持仓盈亏大概率直接用 lastPrice</h3>
+<ul>
+<li>风险：插针一笔，所有用户 U 本位盈亏、强平、资金费率一起歪。</li>
+<li>改法： 新增一个<code>MarkPriceService</code> ，每秒一次输出标记价，口径：
+<ul>
+<li><code>markPrice = clamp( depthWeightedMidPrice, indexPrice * 0.95, indexPrice * 1.05 )</code></li>
+<li>指数价取 3~5 个交易所公开 API 做加权；</li>
+<li>强平模块、资金费、风控预警全部吃<code>markPrice</code> ，UI 显示<code>lastPrice</code> 同时标注“标记价”。</li>
+</ul>
+</li>
+</ul>
+<h3 id="_31">风险点 3：TradePlate 用 LinkedList 扫描，但没做“深度完整性校验”</h3>
+<ul>
+<li>如果做市商节点掉线，盘口档位突然只剩 1 档，你们系统不会感知，仍正常撮合。</li>
+<li>改法：在每次市价撮合前，加一个 盘口有效深度检查 ：
+<ul>
+<li>买卖前 20 档合计金额 &lt; 阈值 → 自动降低本单允许成交比例 + 发告警给做市商调度器。</li>
+</ul>
+</li>
+</ul>
+<h2 id="_33">四、面试官追问：“那万一真插针了，用户被爆仓或吃了高价怎么办？”</h2>
+<p>标准答案：<br>
+“首先按证据分两类： 系统 bug / 操纵自成交 vs 真实供需导致的合理波动 。</p>
+<ol>
+<li>真实波动（非操纵、持续 &gt; 阈值时间、有真实对手量） ：原则上不回滚，保证市场公正性；但可以通过保险基金补偿强平穿仓、减免手续费。</li>
+<li>插针（操纵/深度真空 + 极短时间 + 偏离极大） ：OKX/币安有公开处理机制：
+<ul>
+<li>合约标记价若未突破 ，按标记价强平，用户不会被误爆；</li>
+<li>现货显失公平成交 ，在 5~30 分钟风控窗口内由规则引擎+人工复核，按“保护价”重算或回滚，官网发公告；</li>
+<li>责任归因 ：自成交/违规账户直接限提、冻结；做市商未达深度 SLA 的扣返佣。</li>
+<li>最终兜底 ：合约使用保险基金 + ADL（自动减仓）分摊穿仓损失，不把风险甩给正常用户。”</li>
+</ul>
+</li>
+</ol>
+<h2 id="_36">五、把它串成面试“叙事版答案”（建议你背下来） “我之前做交易所撮合和 Web3 钱包时专门复盘过插针事故，我们从 4 个层面 落地，对标 OKX/币安：</h2>
+<p>第一， 撮合层做硬约束 ，给市价单加 3 道闸：滑点保护（相对最优价 ±3% 停止吃单）、最多 20 档 / 不超过典型深度的 3 倍、价格带用指数价的 ±20% 做硬边界；再加自成交拦截，同一 UID/资金组的 maker-taker 直接 cancel maker，杜绝自己刷价格。</p>
+<p>第二， 行情把 LastPrice 和 MarkPrice 解耦 ，强平、资金费、风控全部用标记价：指数 6 家现货加权去极值，再和盘口买一卖一中价做 clamp，这样就算有一笔怪价，也不会触发爆仓；C 端 K 线会把“持续 &lt; 1s + 量 &lt; 阈值 + 偏离 &gt; 5%”的毛刺抹除，保持 UI 稳定。</p>
+<p>第三， 风控把异常成交和清算解耦 ，单笔偏离标记价 &gt; 5% 先 pending 30 秒进风控队列，不立刻扣钱包、不记账，确认是插针就回滚或按保护价重算；合约侧保险基金 + ADL 分摊穿仓，避免强平单继续砸。</p>
+<p>第四， 运营从根上减少深度真空 ，和头部做市商签深度 SLA，大单引导大宗交易，高风险期降杠杆、提维持保证金。</p>
+<p>最关键一条是我们在项目里落地后验证过的： 把标记价口径从 LastPrice 切到深度加权 + 指数夹取，插针事故对用户盈亏的负面影响直接降了一个数量级 ，剩下更多是 UI 上的“视觉毛刺”而不是资金风险。”<br>
+如果你想要，我可以下一条直接把“ 撮合引擎加滑点保护 + 价格带 + 档数上限 ”改写成你们项目 Java 代码风格的补丁级伪代码（贴进<code>CoinTrader.trade()</code> 就能讲），方便你面试直接讲实现。</p>
+</article>
+</body>
+</html>
